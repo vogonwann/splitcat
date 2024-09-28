@@ -96,11 +96,11 @@ jobs:
           channel: "stable"
 
       - name: Dependencies
-        working-directory: /
+        working-directory: ./
         run: flutter pub get
 
       - name: Compile linux
-        working-directory: /
+        working-directory: ./
         run: flutter build linux
 
       - name: Create tar.gz archive

@@ -1,88 +1,145 @@
-# This file controls Flutter-level build steps. It should not be edited.
+# Project-level configuration.
 cmake_minimum_required(VERSION 3.10)
+project(runner LANGUAGES CXX)
 
-set(EPHEMERAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ephemeral")
+# The name of the executable created for the application. Change this to change
+# the on-disk name of your application.
+set(BINARY_NAME "splitcat")
+# The unique GTK application identifier for this application. See:
+# https://wiki.gnome.org/HowDoI/ChooseApplicationID
+set(APPLICATION_ID "com.example.splitcat")
 
-# Configuration provided via flutter tool.
-include(${EPHEMERAL_DIR}/generated_config.cmake)
+# Explicitly opt in to modern CMake behaviors to avoid warnings with recent
+# versions of CMake.
+cmake_policy(SET CMP0063 NEW)
 
-# TODO: Move the rest of this into files in ephemeral. See
-# https://github.com/flutter/flutter/issues/57146.
+# Load bundled libraries from the lib/ directory relative to the binary.
+set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
 
-# Serves the same purpose as list(TRANSFORM ... PREPEND ...),
-# which isn't available in 3.10.
-function(list_prepend LIST_NAME PREFIX)
-    set(NEW_LIST "")
-    foreach(element ${${LIST_NAME}})
-        list(APPEND NEW_LIST "${PREFIX}${element}")
-    endforeach(element)
-    set(${LIST_NAME} "${NEW_LIST}" PARENT_SCOPE)
+# Root filesystem for cross-building.
+if(FLUTTER_TARGET_PLATFORM_SYSROOT)
+  set(CMAKE_SYSROOT ${FLUTTER_TARGET_PLATFORM_SYSROOT})
+  set(CMAKE_FIND_ROOT_PATH ${CMAKE_SYSROOT})
+  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+  set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+endif()
+
+# Define build configuration options.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE
+    STRING "Flutter build mode" FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Profile" "Release")
+endif()
+
+# Compilation settings that should be applied to most targets.
+#
+# Be cautious about adding new options here, as plugins use this function by
+# default. In most cases, you should add new options to specific targets instead
+# of modifying this function.
+function(APPLY_STANDARD_SETTINGS TARGET)
+  target_compile_features(${TARGET} PUBLIC cxx_std_14)
+  target_compile_options(${TARGET} PRIVATE -Wall -Werror)
+  target_compile_options(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:-O3>")
+  target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
 endfunction()
 
-# === Flutter Library ===
+# Flutter library and tool build rules.
+set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
+add_subdirectory(${FLUTTER_MANAGED_DIR})
+
 # System-level dependencies.
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
-pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
-pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
 
-set(FLUTTER_LIBRARY "${EPHEMERAL_DIR}/libflutter_linux_gtk.so")
+add_definitions(-DAPPLICATION_ID="${APPLICATION_ID}")
 
-# Published to parent scope for install step.
-set(FLUTTER_LIBRARY ${FLUTTER_LIBRARY} PARENT_SCOPE)
-set(FLUTTER_ICU_DATA_FILE "${EPHEMERAL_DIR}/icudtl.dat" PARENT_SCOPE)
-set(PROJECT_BUILD_DIR "${PROJECT_DIR}/build/" PARENT_SCOPE)
-set(AOT_LIBRARY "${PROJECT_DIR}/build/lib/libapp.so" PARENT_SCOPE)
+# Define the application target. To change its name, change BINARY_NAME above,
+# not the value here, or `flutter run` will no longer work.
+#
+# Any new source files that you add to the application should be added here.
+add_executable(${BINARY_NAME}
+  "main.cc"
+  "my_application.cc"
+  "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
+)
 
-list(APPEND FLUTTER_LIBRARY_HEADERS
-  "fl_basic_message_channel.h"
-  "fl_binary_codec.h"
-  "fl_binary_messenger.h"
-  "fl_dart_project.h"
-  "fl_engine.h"
-  "fl_json_message_codec.h"
-  "fl_json_method_codec.h"
-  "fl_message_codec.h"
-  "fl_method_call.h"
-  "fl_method_channel.h"
-  "fl_method_codec.h"
-  "fl_method_response.h"
-  "fl_plugin_registrar.h"
-  "fl_plugin_registry.h"
-  "fl_standard_message_codec.h"
-  "fl_standard_method_codec.h"
-  "fl_string_codec.h"
-  "fl_value.h"
-  "fl_view.h"
-  "flutter_linux.h"
-)
-list_prepend(FLUTTER_LIBRARY_HEADERS "${EPHEMERAL_DIR}/flutter_linux/")
-add_library(flutter INTERFACE)
-target_include_directories(flutter INTERFACE
-  "${EPHEMERAL_DIR}"
-)
-target_link_libraries(flutter INTERFACE "${FLUTTER_LIBRARY}")
-target_link_libraries(flutter INTERFACE
-  PkgConfig::GTK
-  PkgConfig::GLIB
-  PkgConfig::GIO
-)
-add_dependencies(flutter flutter_assemble)
+# Apply the standard set of build settings. This can be removed for applications
+# that need different build settings.
+apply_standard_settings(${BINARY_NAME})
 
-# === Flutter tool backend ===
-# _phony_ is a non-existent file to force this command to run every time,
-# since currently there's no way to get a full input/output list from the
-# flutter tool.
-add_custom_command(
-  OUTPUT ${FLUTTER_LIBRARY} ${FLUTTER_LIBRARY_HEADERS}
-    ${CMAKE_CURRENT_BINARY_DIR}/_phony_
-  COMMAND ${CMAKE_COMMAND} -E env
-    ${FLUTTER_TOOL_ENVIRONMENT}
-    "${FLUTTER_ROOT}/packages/flutter_tools/bin/tool_backend.sh"
-      ${FLUTTER_TARGET_PLATFORM} ${CMAKE_BUILD_TYPE}
-  VERBATIM
+# Add dependency libraries. Add any application-specific dependencies here.
+target_link_libraries(${BINARY_NAME} PRIVATE flutter)
+target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
+
+# Run the Flutter tool portions of the build. This must not be removed.
+add_dependencies(${BINARY_NAME} flutter_assemble)
+
+# Only the install-generated bundle's copy of the executable will launch
+# correctly, since the resources must in the right relative locations. To avoid
+# people trying to run the unbundled copy, put it in a subdirectory instead of
+# the default top-level location.
+set_target_properties(${BINARY_NAME}
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/intermediates_do_not_run"
 )
-add_custom_target(flutter_assemble DEPENDS
-  "${FLUTTER_LIBRARY}"
-  ${FLUTTER_LIBRARY_HEADERS}
-)
+
+
+# Generated plugin build rules, which manage building the plugins and adding
+# them to the application.
+include(flutter/generated_plugins.cmake)
+
+
+# === Installation ===
+# By default, "installing" just makes a relocatable bundle in the build
+# directory.
+set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
+endif()
+
+# Start with a clean build bundle directory every time.
+install(CODE "
+  file(REMOVE_RECURSE \"${BUILD_BUNDLE_DIR}/\")
+  " COMPONENT Runtime)
+
+set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
+set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+
+install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
+  COMPONENT Runtime)
+
+install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
+
+foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
+  install(FILES "${bundled_library}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endforeach(bundled_library)
+
+# Copy the native assets provided by the build.dart from all packages.
+set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/linux/")
+install(DIRECTORY "${NATIVE_ASSETS_DIR}"
+   DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+   COMPONENT Runtime)
+
+# Fully re-copy the assets directory on each build to avoid having stale files
+# from a previous install.
+set(FLUTTER_ASSET_DIR_NAME "flutter_assets")
+install(CODE "
+  file(REMOVE_RECURSE \"${INSTALL_BUNDLE_DATA_DIR}/${FLUTTER_ASSET_DIR_NAME}\")
+  " COMPONENT Runtime)
+install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
+  DESTINATION "${INSTALL_BUNDLE_DATA_DIR}" COMPONENT Runtime)
+
+# Install the AOT library on non-Debug builds only.
+if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+  install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()

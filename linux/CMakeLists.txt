@@ -135,7 +135,7 @@ message("INSTALL_BUNDLE_DATA_DIR: ${INSTALL_BUNDLE_DATA_DIR}")
 
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "native_assets/linux/")
-install("${PROJECT_DIR}" "${NATIVE_ASSETS_DIR}"
+install(DIRECTORY "${NATIVE_ASSETS_DIR}"
    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
    COMPONENT Runtime)
 

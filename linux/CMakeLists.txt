@@ -130,6 +130,10 @@ install(DIRECTORY "${NATIVE_ASSETS_DIR}"
    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
    COMPONENT Runtime)
 
+message("PROJECT_DIR: ${PROJECT_DIR}")
+message("PROJECT_BUILD_DIR: ${PROJECT_BUILD_DIR}")
+message("NATIVE_ASSETS_DIR: ${NATIVE_ASSETS_DIR}")
+
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
 set(FLUTTER_ASSET_DIR_NAME "flutter_assets")

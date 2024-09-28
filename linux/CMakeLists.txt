@@ -128,9 +128,9 @@ message("PROJECT_DIR: ${PROJECT_DIR}")
 message("PROJECT_BUILD_DIR: ${PROJECT_BUILD_DIR}")
 message("NATIVE_ASSETS_DIR: ${NATIVE_ASSETS_DIR}")
 message("INSTALL_BUNDLE_LIB_DIR: ${INSTALL_BUNDLE_LIB_DIR}")
-message("INSTALL_BUNDLE_LIB_DIR: ${INSTALL_BUNDLE_LIB_DIR}")
 string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_DIR "${PROJECT_DIR}")
 string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BUILD_DIR "${PROJECT_BUILD_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_LIB_DIR "${INSTALL_BUNDLE_LIB_DIR}")
 
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/linux/")

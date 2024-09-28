@@ -161,7 +161,7 @@ class _MergeScreenState extends State<MergeScreen> {
                 FilePickerResult? result;
                 if (Platform.isLinux) {
                   result =
-                      await FilePickerLinux().pickFiles(allowMultiple: true);
+                      await FilePicker.platform.pickFiles(allowMultiple: true);
                 } else {
                   result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);

@@ -11,13 +11,19 @@ include(${EPHEMERAL_DIR}/generated_config.cmake)
 
 # Serves the same purpose as list(TRANSFORM ... PREPEND ...),
 # which isn't available in 3.10.
+message("Current list before prepend: ${LIST_NAME}")
 function(list_prepend LIST_NAME PREFIX)
     set(NEW_LIST "")
     foreach(element ${${LIST_NAME}})
-        list(APPEND NEW_LIST "${PREFIX}${element}")
+        if(NOT element MATCHES "^${PREFIX}")
+            list(APPEND NEW_LIST "${PREFIX}${element}")
+        else()
+            list(APPEND NEW_LIST "${element}")  # Ako već sadrži prefiks, dodaj ga bez promene
+        endif()
     endforeach(element)
     set(${LIST_NAME} "${NEW_LIST}" PARENT_SCOPE)
 endfunction()
+message("Current list after prepend: ${LIST_NAME}")
 
 # === Flutter Library ===
 # System-level dependencies.
@@ -31,7 +37,7 @@ set(FLUTTER_LIBRARY "${EPHEMERAL_DIR}/libflutter_linux_gtk.so")
 # Published to parent scope for install step.
 set(FLUTTER_LIBRARY ${FLUTTER_LIBRARY} PARENT_SCOPE)
 set(FLUTTER_ICU_DATA_FILE "${EPHEMERAL_DIR}/icudtl.dat" PARENT_SCOPE)
-set(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+set(PROJECT_DIR "${CMAKE_SOURCE_DIR}" PARENT_SCOPE)
 set(PROJECT_BUILD_DIR "${PROJECT_DIR}/build/" PARENT_SCOPE)
 set(AOT_LIBRARY "${PROJECT_DIR}/build/lib/libapp.so" PARENT_SCOPE)
 

@@ -17,7 +17,7 @@
 
 cd ..
 rm -rf /tmp/build
-cp localsend /tmp/build -r
+cp splitcat /tmp/build -r
 pushd /tmp/build
 
 git submodule update --init
@@ -28,4 +28,4 @@ flutter pub run build_runner build -d
 flutter build apk
 
 popd
-cd localsend
+cd splitcat

@@ -12,7 +12,7 @@
 
 cd ..
 rm -rf /tmp/build
-cp localsend /tmp/build -r
+cp splitcat /tmp/build -r
 pushd /tmp/build
 
 git submodule update --init
@@ -29,11 +29,11 @@ rm -rf appimage-build
 mkdir AppDir
 cp -r build/linux/x64/release/bundle/* AppDir
 appimage-builder
-sudo chmod +x LocalSend-latest-x86_64.AppImage
+sudo chmod +x Splitcat-latest-x86_64.AppImage
 
 rm -rf AppDir
 rm -rf appimage-build
 
 popd
-cd localsend
-cp /tmp/build/LocalSend-latest-x86_64.AppImage .
+cd splitcat
+cp /tmp/build/Splitcat-latest-x86_64.AppImage .

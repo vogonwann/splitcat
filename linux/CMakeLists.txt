@@ -98,11 +98,12 @@ string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INST
 # By default, "installing" just makes a relocatable bundle in the build
 # directory.
 set(PROJECT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-message("PROJECT_BINARY_DIR ${PROJECT_BINARY_DIR}")
 string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
+message("PROJECT_BINARY_DIR ${PROJECT_BINARY_DIR}")
 set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
 #if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
+  essage("CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}")
 #endif()
 
 string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")

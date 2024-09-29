@@ -99,9 +99,9 @@ string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INST
 # directory.
 string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
 set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+#if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
-endif()
+#endif()
 
 string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")
 

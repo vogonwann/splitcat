@@ -48,13 +48,13 @@ function(APPLY_STANDARD_SETTINGS TARGET)
 endfunction()
 
 
-string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_DATA_DIR "${INSTALL_BUNDLE_DATA_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_LIB_DIR "${INSTALL_BUNDLE_LIB_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BUILD_DIR "${PROJECT_BUILD_DIR}")
-string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_DATA_DIR "${INSTALL_BUNDLE_DATA_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_LIB_DIR "${INSTALL_BUNDLE_LIB_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BUILD_DIR "${PROJECT_BUILD_DIR}")
+# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")

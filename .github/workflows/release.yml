@@ -101,7 +101,7 @@ jobs:
 
       - name: Compile linux
         working-directory: ./
-        run: flutter build linux --release
+        run: flutter build linux --release --verbose
 
       - name: List files even if the build fails
         if: always()

@@ -108,7 +108,7 @@ add_custom_target(flutter_assemble DEPENDS
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/128x128/icon.png DESTINATION share/icons/hicolor/128x128/apps)
 # install(FILES 
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/256x256/icon.png DESTINATION share/icons/hicolor/256x256/apps)
-install(FILES 
-  ${PROJECT_DIR}/linux/packaging/deb/make-config.yaml DESTINATION linux/packaging/deb)
-install(FILES 
-  ${PROJECT_DIR}/linux/packaging/rpm/make-config.yaml DESTINATION linux/packaging/rpm)
+# install(FILES 
+#   ${PROJECT_DIR}/linux/packaging/deb/make-config.yaml DESTINATION linux/packaging/deb)
+# install(FILES 
+#   ${PROJECT_DIR}/linux/packaging/rpm/make_config.yaml DESTINATION linux/packaging/rpm)

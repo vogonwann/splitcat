@@ -7,11 +7,11 @@ script:
 AppDir:
   path: AppDir
   app_info:
-    id: lol.janjic.splitcat.splitcat_app
+    id: lol.janjic.Splitcat.splitcat
     name: Splitcat
     icon: splitcat
     version: latest
-    exec: splitcat_app
+    exec: splitcat
     exec_args: $@
   apt:
     arch:

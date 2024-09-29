@@ -103,9 +103,12 @@ jobs:
         working-directory: ./
         run: flutter build linux --release
 
-      - name: List files after build
-        run: ls -R ./build/linux/x64/release/bundle/lib/      
-
+      - name: List files even if the build fails
+        if: always()
+        run: |
+          echo "Listing build directory contents:"
+          ls -R ./build/linux/x64/release/bundle/lib/ || echo "Directory does not exist!"
+      
       - name: Create tar.gz archive
         run: |
           cd /build/linux/x64/release/bundle

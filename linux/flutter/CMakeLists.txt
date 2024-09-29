@@ -106,3 +106,6 @@ install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/64x64/icon.png DESTINATION share/icons/hicolor/64x64/apps)
 install(FILES 
   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/128x128/icon.png DESTINATION share/icons/hicolor/128x128/apps)
+install(FILES 
+  ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/256x256/icon.png DESTINATION share/icons/hicolor/256x256/apps)
+

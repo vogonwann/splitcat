@@ -1,0 +1,28 @@
+display_name: Splitcat  
+packager: Vogonwann
+packagerEmail: ivan@janjic.lol  
+url: https://janjic.lol
+buildArch: x86_64
+license: MIT
+
+icon: assets/icons/256x256/icon.png
+
+requires:
+  - libappindicator
+  - xdg-user-dirs
+
+keywords:
+  - Sharing
+  - LAN
+  - Files
+
+generic_name: An open source cross-platform for spliting and merging files
+summary: Split files on custom or predefined sized chunks and merge them back 
+group: Applications/Utilities
+
+categories:
+  - GTK
+  - FileTools
+  - Utility
+
+startup_notify: true

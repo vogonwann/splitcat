@@ -47,15 +47,6 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
 endfunction()
 
-
-# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_DATA_DIR "${INSTALL_BUNDLE_DATA_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_LIB_DIR "${INSTALL_BUNDLE_LIB_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BUILD_DIR "${PROJECT_BUILD_DIR}")
-# string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
@@ -100,7 +91,6 @@ set_target_properties(${BINARY_NAME}
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
-
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build
 # directory.
@@ -132,9 +122,18 @@ foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
     COMPONENT Runtime)
 endforeach(bundled_library)
 
+set(FLUTTER_ASSET_DIR_NAME "flutter_assets")
+string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" BUILD_BUNDLE_DIR "${BUILD_BUNDLE_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_DATA_DIR "${INSTALL_BUNDLE_DATA_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" INSTALL_BUNDLE_LIB_DIR "${INSTALL_BUNDLE_LIB_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BUILD_DIR "${PROJECT_BUILD_DIR}")
+string(REPLACE "splitcat/splitcat" "splitcat" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+string(REPLACE "splitcat/splitcat" "splitcat" PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
+
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
-set(FLUTTER_ASSET_DIR_NAME "flutter_assets")
 install(CODE "
   file(REMOVE_RECURSE \"${INSTALL_BUNDLE_DATA_DIR}/${FLUTTER_ASSET_DIR_NAME}\")
   " COMPONENT Runtime)

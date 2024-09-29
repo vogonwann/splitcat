@@ -21,7 +21,7 @@ alias flutter='submodules/flutter/bin/flutter'
 flutter clean
 flutter pub get
 flutter pub run build_runner build -d
-flutter build linux
+flutter build linux --release
 
 rm -rf AppDir
 rm -rf appimage-build

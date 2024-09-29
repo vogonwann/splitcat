@@ -7,11 +7,11 @@ script:
 AppDir:
   path: AppDir
   app_info:
-    id: org.localsend.localsend_app
-    name: LocalSend
-    icon: localsend
+    id: lol.janjic.splitcat.splitcat_app
+    name: Splitcat
+    icon: splitcat
     version: latest
-    exec: localsend_app
+    exec: splitcat_app
     exec_args: $@
   apt:
     arch:

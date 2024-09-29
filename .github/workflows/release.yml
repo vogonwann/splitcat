@@ -284,6 +284,9 @@ jobs:
           mkdir AppDir
           cp -r build/linux/x64/release/bundle/* AppDir/
 
+      - name: Print working directory
+        run: pwd
+
       - name: Copy logo to AppDir
         run: |
           mkdir -p AppDir/usr/share/icons/hicolor/32x32/apps

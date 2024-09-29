@@ -308,6 +308,9 @@ jobs:
         with:
           recipe: ./AppImageBuilder.yml
 
+      - name: List AppDir
+        run: ls AppDir/
+
       - name: Upload AppImage file
         uses: actions/upload-artifact@v4
         with:

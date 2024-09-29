@@ -187,8 +187,10 @@ jobs:
 
       - name: Build deb package
         working-directory: ./
-        run: flutter_distributor package --platform linux --targets deb --verbose
-          
+        run: |
+          dart pub global activate flutter_distributor
+          flutter_distributor package --platform linux --targets deb --flutter-build-args=verbose
+
       - name: Find deb file
         id: find_deb
         run: |

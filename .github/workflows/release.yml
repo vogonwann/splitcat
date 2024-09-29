@@ -99,6 +99,12 @@ jobs:
         working-directory: ./
         run: flutter pub get
 
+      - name: List project files
+        run: ls -R
+      
+      - name: Print working directory
+        run: pwd
+
       - name: Clean build
         run: flutter clean
 

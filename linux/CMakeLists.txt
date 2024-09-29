@@ -29,7 +29,7 @@ endif()
 
 # Define build configuration options.
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_BUILD_TYPE "Debug" CACHE
+  set(CMAKE_BUILD_TYPE "Release" CACHE
     STRING "Flutter build mode" FORCE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Profile" "Release")

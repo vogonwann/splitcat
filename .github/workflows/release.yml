@@ -99,6 +99,9 @@ jobs:
         working-directory: ./
         run: flutter pub get
 
+      - name: Clean build
+        run: flutter clean
+
       - name: Compile linux
         working-directory: ./
         run: flutter build linux --release --verbose

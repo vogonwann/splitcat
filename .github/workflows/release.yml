@@ -277,7 +277,7 @@ jobs:
 
       - name: Compile linux
         working-directory: ./
-        run: flutter build linux
+        run: flutter build linux --release
 
       - name: Copy compiled linux files
         run: |
@@ -290,15 +290,15 @@ jobs:
       - name: Copy logo to AppDir
         run: |
           mkdir -p AppDir/usr/share/icons/hicolor/16x16/apps
-          cp share/icons/hicolor/16x16/icon.png AppDir/usr/share/icons/hicolor/16x16/apps/splitcat.png
+          cp ./share/icons/hicolor/16x16/icon.png AppDir/usr/share/icons/hicolor/16x16/apps/splitcat.png
           mkdir -p AppDir/usr/share/icons/hicolor/32x32/apps
-          cp share/icons/hicolor/32x32/icon.png AppDir/usr/share/icons/hicolor/32x32/apps/splitcat.png
+          cp ./share/icons/hicolor/32x32/icon.png AppDir/usr/share/icons/hicolor/32x32/apps/splitcat.png
           mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps
-          cp share/icons/hicolor/64x64/icon.png AppDir/usr/share/icons/hicolor/64x64/apps/splitcat.png
+          cp ./share/icons/hicolor/64x64/icon.png AppDir/usr/share/icons/hicolor/64x64/apps/splitcat.png
           mkdir -p AppDir/usr/share/icons/hicolor/128x128/apps
-          cp share/icons/hicolor/128x128/icon.png AppDir/usr/share/icons/hicolor/128x128/apps/splitcat.png
+          cp ./share/icons/hicolor/128x128/icon.png AppDir/usr/share/icons/hicolor/128x128/apps/splitcat.png
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          cp share/icons/hicolor/256x256/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/splitcat.png
+          cp ./share/icons/hicolor/256x256/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/splitcat.png
 
       - name: Copy Recipe to correct location
         run: cp /scripts/appimage/AppImageBuilder_x86_64.yml AppImageBuilder.yml

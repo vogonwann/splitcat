@@ -101,7 +101,7 @@ jobs:
 
       - name: Compile linux
         working-directory: ./
-        run: flutter build linux
+        run: flutter build linux --release
 
       - name: Create tar.gz archive
         run: |

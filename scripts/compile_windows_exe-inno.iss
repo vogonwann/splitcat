@@ -3,11 +3,11 @@
 ; Copy the contents of the zip to D:\inno, then run this Inno script
 ; Copy app/assets/packaging/logo-256.ico to D:\inno\logo-256.ico
 
-#define MyAppName "LocalSend"
+#define MyAppName "Splitcat"
 #define MyAppVersion "1.15.4"
 #define MyAppPublisher "Tien Do Nam"
-#define MyAppURL "https://localsend.org"
-#define MyAppExeName "localsend_app.exe"
+#define MyAppURL "https://splitcat.janjic.lol"
+#define MyAppExeName "splitcat.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -26,7 +26,7 @@ DisableProgramGroupPage=yes
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=D:\inno-result
-OutputBaseFilename=localsend
+OutputBaseFilename=splitcat
 SetupIconFile=D:\inno\logo.ico
 Compression=lzma
 SolidCompression=yes

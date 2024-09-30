@@ -334,6 +334,12 @@ jobs:
     - name: Clean previous builds
       run: flutter clean
 
+    - name: Show current dir
+      run: pwd
+
+    - name: List current dir
+      run: ls
+
     - name: Dependencies
       working-directory: ./
       run: flutter pub get

@@ -41,7 +41,7 @@ jobs:
     - name: Add DLL files
       working-directory: ./
       run: |
-            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\window\x64\runner\Release\
+            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
             Copy-Item scripts/windows/x64/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
             Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
 

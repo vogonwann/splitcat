@@ -1,0 +1,10 @@
+template: |
+  ### Summary
+  
+  - insert summary here
+  
+  ### Contributions
+  
+  $CHANGES
+
+  [Full Changelog](https://github.com/vogonwann/splitcat/blob/main/app/assets/CHANGELOG.md)

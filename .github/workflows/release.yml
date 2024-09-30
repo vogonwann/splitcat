@@ -350,14 +350,14 @@ jobs:
 
     - name: Create empty settings.json
       working-directory: ./
-      run: echo {} > D:\a\splitcat\splitcat\build\windows\x64\runner\Release\settings.json
+      run: echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
 
     - name: Add DLL files
       working-directory: ./
       run: |
-            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
-            Copy-Item scripts/windows/x64/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
-            Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
+            Copy-Item scripts/windows/msvcp140.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
+            Copy-Item scripts/windows/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
+            Copy-Item scripts/windows/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
 
     - name: Zip compiled files
       working-directory: ./

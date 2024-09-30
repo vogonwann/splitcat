@@ -50,4 +50,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: windows-zip-x86-64-result
+        path: Splitcat.zip
     

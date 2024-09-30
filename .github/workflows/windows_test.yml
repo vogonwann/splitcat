@@ -30,7 +30,7 @@ jobs:
 
     - name: Create empty settings.json
       working-directory: ./
-      run: echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
+      run: echo {} > ../build/windows/runner/Release/settings.json
 
     - name: Add DLL files
       working-directory: ./

@@ -331,6 +331,8 @@ jobs:
       with:
             flutter-version: ${{ env.FLUTTER_VERSION }}
             channel: "stable"
+    - name: Clean previous builds
+      run: flutter clean
 
     - name: Dependencies
       working-directory: ./

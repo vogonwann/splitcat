@@ -361,7 +361,7 @@ jobs:
 
     - name: Zip compiled files
       working-directory: ./
-      run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath Splitcat.zip
+      run: Compress-Archive -Path build/windows/runner/Release/* -DestinationPath Splitcat.zip
 
     - name: Upload zip
       uses: actions/upload-artifact@v4

@@ -394,44 +394,44 @@ jobs:
           name: v${{ needs.build.outputs.version }}
 
       # APK
-      - name: Download apk file
-        uses: actions/download-artifact@v4
-        with:
-          name: apk-result
-          path: apk-result
+      # - name: Download apk file
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: apk-result
+      #     path: apk-result
 
-      - name: Copy apk file to root
-        run: cp apk-result/*.apk .
+      # - name: Copy apk file to root
+      #   run: cp apk-result/*.apk .
 
-      - name: Upload Release Asset (arm32v7)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: app-armeabi-v7a-release.apk
-          asset_name: Splitcat-${{ needs.build.outputs.version }}-android-arm32v7.apk
-          asset_content_type: application/vnd.android.package-archive
+      # - name: Upload Release Asset (arm32v7)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.draft_release.outputs.upload_url }}
+      #     asset_path: app-armeabi-v7a-release.apk
+      #     asset_name: Splitcat-${{ needs.build.outputs.version }}-android-arm32v7.apk
+      #     asset_content_type: application/vnd.android.package-archive
 
-      - name: Upload Release Asset (arm64v8)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: app-arm64-v8a-release.apk
-          asset_name: Splitcat-${{ needs.build.outputs.version }}-android-arm64v8.apk
-          asset_content_type: application/vnd.android.package-archive
+      # - name: Upload Release Asset (arm64v8)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.draft_release.outputs.upload_url }}
+      #     asset_path: app-arm64-v8a-release.apk
+      #     asset_name: Splitcat-${{ needs.build.outputs.version }}-android-arm64v8.apk
+      #     asset_content_type: application/vnd.android.package-archive
 
-      - name: Upload Release Asset (x64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: app-x86_64-release.apk
-          asset_name: Splitcat-${{ needs.build.outputs.version }}-android-x64.apk
-          asset_content_type: application/vnd.android.package-archive
+      # - name: Upload Release Asset (x64)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.draft_release.outputs.upload_url }}
+      #     asset_path: app-x86_64-release.apk
+      #     asset_name: Splitcat-${{ needs.build.outputs.version }}-android-x64.apk
+      #     asset_content_type: application/vnd.android.package-archive
 
       # TAR.GZ (x86_64)
       - name: Download tar.gz file
@@ -457,27 +457,27 @@ jobs:
           asset_content_type: application/gzip
 
       # TAR.GZ (arm_64)
-      - name: Download tar.gz file
-        uses: actions/download-artifact@v4
-        with:
-          name: tar-gz-arm-64-result
-          path: tar-gz-arm-64-result
+      # - name: Download tar.gz file
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: tar-gz-arm-64-result
+      #     path: tar-gz-arm-64-result
 
-      - name: List files in tar.gz-directory
-        run: ls -l tar-gz-arm-64-result
+      # - name: List files in tar.gz-directory
+      #   run: ls -l tar-gz-arm-64-result
 
-      - name: Copy tar.gz file to root
-        run: cp tar-gz-arm-64-result/* result.tar.gz
+      # - name: Copy tar.gz file to root
+      #   run: cp tar-gz-arm-64-result/* result.tar.gz
 
-      - name: Upload Release Asset (tar.gz)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: result.tar.gz
-          asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-arm-64.tar.gz
-          asset_content_type: application/gzip
+      # - name: Upload Release Asset (tar.gz)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.draft_release.outputs.upload_url }}
+      #     asset_path: result.tar.gz
+      #     asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-arm-64.tar.gz
+      #     asset_content_type: application/gzip
 
       # DEB (x86_64)
       - name: Download deb file
@@ -500,24 +500,24 @@ jobs:
           asset_content_type: application/vnd.debian.binary-package
 
       # DEB (arm_64)
-      - name: Download deb file
-        uses: actions/download-artifact@v4
-        with:
-          name: deb-arm-64-result
-          path: deb-arm-64-result
+      # - name: Download deb file
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: deb-arm-64-result
+      #     path: deb-arm-64-result
 
-      - name: Copy deb file to root
-        run: cp deb-arm-64-result/*.deb result.deb
+      # - name: Copy deb file to root
+      #   run: cp deb-arm-64-result/*.deb result.deb
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: result.deb
-          asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-arm-64.deb
-          asset_content_type: application/vnd.debian.binary-package
+      # - name: Upload Release Asset
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.draft_release.outputs.upload_url }}
+      #     asset_path: result.deb
+      #     asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-arm-64.deb
+      #     asset_content_type: application/vnd.debian.binary-package
 
       # APPIMAGE (x86_64)
       - name: Download AppImage file

@@ -32,7 +32,7 @@ jobs:
       run: pwd
 
     - name: List working dir
-      run: ls build/windows
+      run: ls build/windows/x64
 
     - name: Create empty settings.json
       working-directory: ./

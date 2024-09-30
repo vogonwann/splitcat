@@ -316,6 +316,7 @@ jobs:
           path: ./*.AppImage
 
   build_windows_zip_x86_64:
+    needs: build
 
     runs-on: windows-latest
 

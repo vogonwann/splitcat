@@ -31,6 +31,9 @@ jobs:
     - name: Print working dir
       run: pwd
 
+    - name: List working dir
+      run: ls -lisa
+
     - name: Create empty settings.json
       working-directory: ./
       run: echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json

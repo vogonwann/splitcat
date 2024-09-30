@@ -132,35 +132,35 @@ jobs:
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_tar_arm_64:
-    needs: build
-    runs-on: [ self-hosted, linux, arm64 ]
+    # needs: build
+    # runs-on: [ self-hosted, linux, arm64 ]
 
-    steps:
-      - uses: actions/checkout@v4
+    # steps:
+    #   - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
+    #   - name: Install dependencies
+    #     run: |
+    #       sudo apt-get update
+    #       sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
 
-      - name: Dependencies
-        working-directory: ./
-        run: flutter pub get
+    #   - name: Dependencies
+    #     working-directory: ./
+    #     run: flutter pub get
 
-      - name: Compile linux
-        working-directory: ./
-        run: flutter build linux --release
+    #   - name: Compile linux
+    #     working-directory: ./
+    #     run: flutter build linux --release
 
-      - name: Create tar.gz archive
-        run: |
-          cd build/linux/arm64/release/bundle
-          tar -czvf ../../../../../result.tar.gz *
+    #   - name: Create tar.gz archive
+    #     run: |
+    #       cd build/linux/arm64/release/bundle
+    #       tar -czvf ../../../../../result.tar.gz *
 
-      - name: Upload tar.gz archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: tar-gz-arm-64-result
-          path: ./*.tar.gz
+    #   - name: Upload tar.gz archive
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: tar-gz-arm-64-result
+    #       path: ./*.tar.gz
 
   build_deb_x86_64:
     needs: build
@@ -213,44 +213,44 @@ jobs:
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_deb_arm_64:
-    needs: build
-    runs-on: [ self-hosted, linux, arm64 ]
+    # needs: build
+    # runs-on: [ self-hosted, linux, arm64 ]
 
-    steps:
-      - uses: actions/checkout@v4
+    # steps:
+    #   - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
+    #   - name: Install dependencies
+    #     run: |
+    #       sudo apt-get update
+    #       sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
 
-      - name: Enable dart_distributor
-        run: dart pub global activate flutter_distributor
+    #   - name: Enable dart_distributor
+    #     run: dart pub global activate flutter_distributor
 
-      - name: Build deb package
-        working-directory: ./
-        run: PATH="$PATH:$HOME/.pub-cache/bin" flutter_distributor package --platform linux --targets deb
+    #   - name: Build deb package
+    #     working-directory: ./
+    #     run: PATH="$PATH:$HOME/.pub-cache/bin" flutter_distributor package --platform linux --targets deb
 
-      - name: Find deb file
-        id: find_deb
-        run: |
-          VERSION=${{ needs.build.outputs.version }}
-          DEB_PATH=$(find dist -name "splitcat-$VERSION*-linux.deb")
-          echo "deb_path=$DEB_PATH" >> $GITHUB_OUTPUT
+    #   - name: Find deb file
+    #     id: find_deb
+    #     run: |
+    #       VERSION=${{ needs.build.outputs.version }}
+    #       DEB_PATH=$(find dist -name "splitcat-$VERSION*-linux.deb")
+    #       echo "deb_path=$DEB_PATH" >> $GITHUB_OUTPUT
 
-      - name: Check if deb file exists
-        id: check_file
-        run: |
-          if [[ ! -f "${{ steps.find_deb.outputs.deb_path }}" ]]; then
-            echo "File not found: ${{ steps.find_deb.outputs.deb_path }}"
-            exit 1
-          fi
+    #   - name: Check if deb file exists
+    #     id: check_file
+    #     run: |
+    #       if [[ ! -f "${{ steps.find_deb.outputs.deb_path }}" ]]; then
+    #         echo "File not found: ${{ steps.find_deb.outputs.deb_path }}"
+    #         exit 1
+    #       fi
 
-      - name: Upload deb file
-        uses: actions/upload-artifact@v4
-        with:
-          name: deb-arm-64-result
-          path: ${{ steps.find_deb.outputs.deb_path }}
+    #   - name: Upload deb file
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: deb-arm-64-result
+    #       path: ${{ steps.find_deb.outputs.deb_path }}
 
   build_appimage_x86_64:
     needs: build

@@ -28,12 +28,6 @@ jobs:
       working-directory: ./
       run: flutter build windows --release
 
-    - name: Print working dir
-      run: pwd
-
-    - name: List working dir
-      run: ls build/windows/x64
-
     - name: Create empty settings.json
       working-directory: ./
       run: echo {} > D:\a\splitcat\splitcat\build\windows\x64\runner\Release\settings.json

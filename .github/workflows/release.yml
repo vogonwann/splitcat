@@ -338,7 +338,7 @@ jobs:
       run: pwd
 
     - name: List current dir
-      run: ls
+      run: ls windows
 
     - name: Dependencies
       working-directory: ./

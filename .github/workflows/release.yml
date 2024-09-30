@@ -131,7 +131,7 @@ jobs:
 
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
-  build_tar_arm_64:
+  # build_tar_arm_64:
     needs: build
     runs-on: [ self-hosted, linux, arm64 ]
 
@@ -212,7 +212,7 @@ jobs:
 
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
-  build_deb_arm_64:
+  # build_deb_arm_64:
     needs: build
     runs-on: [ self-hosted, linux, arm64 ]
 
@@ -316,49 +316,49 @@ jobs:
           path: ./*.AppImage
 
   build_windows_zip_x86_64:
-    needs: build
+
     runs-on: windows-latest
 
     steps:
-      - name: Fix long file paths
-        run: git config --system core.longpaths true
+    - name: Fix long file paths
+      run: git config --system core.longpaths true
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: "stable"
+    - uses: subosito/flutter-action@v2
+      with:
+            flutter-version: ${{ env.FLUTTER_VERSION }}
+            channel: "stable"
 
-      - name: Dependencies
-        working-directory: ./
-        run: flutter pub get
+    - name: Dependencies
+      working-directory: ./
+      run: flutter pub get
 
-      - name: Compile for Windows
-        working-directory: ./
-        run: flutter build windows
+    - name: Compile for Windows
+      working-directory: ./
+      run: flutter build windows --release
 
-      - name: Create empty settings.json
-        working-directory: ./
-        run: echo {} > build/windows/runner/Release/settings.json
+    - name: Create empty settings.json
+      working-directory: ./
+      run: echo {} > D:\a\splitcat\splitcat\build\windows\x64\runner\Release\settings.json
 
-      - name: Add DLL files
-        working-directory: ./
-        run: |
-          Copy-Item ../scripts/windows/x64/msvcp140.dll build/windows/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140.dll build/windows/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140_1.dll build/windows/runner/Release/
+    - name: Add DLL files
+      working-directory: ./
+      run: |
+            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
+            Copy-Item scripts/windows/x64/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
+            Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
 
-      - name: Zip compiled files
-        working-directory: ./
-        run: Compress-Archive -Path build/windows/runner/Release/* -DestinationPath Splitcat.zip
+    - name: Zip compiled files
+      working-directory: ./
+      run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath Splitcat.zip
 
-      - name: Upload zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-zip-x86-64-result
-          path: Splitcat.zip
+    - name: Upload zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-zip-x86-64-result
+        path: Splitcat.zip
 
   release:
     needs:

@@ -6,6 +6,8 @@ on:
 env:
   FLUTTER_VERSION: "3.13.9"
   APK_BUILD_DIR: "/tmp/build"
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   build:
@@ -83,6 +85,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
+      version:  ${{ steps.set_version.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -138,6 +141,10 @@ jobs:
           REPO="vogonwann/splitcat"
           LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
           echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
+      - name: Set version
+        id: set_version
+        run: |
+          echo "::set-output name=version::0.1.0"
 
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.

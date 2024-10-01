@@ -28,21 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
-      version: ${{ steps.set_version.outputs.version }}
-    
+
     steps:
       - name: Get upload URL
         id: get_upload_url
         run: |
           upload_url=$(curl -s "https://api.github.com/repos/vogonwann/splitcat/releases/latest" | jq -r '.upload_url' | sed 's/{?name,label}//')
-          echo "::set-output name=upload_url::$upload_url"
-      
-      - name: Set version
-        id: set_version
-        run: |
-          version="0.1.0"
-          echo "::set-output name=version::$version"
-
+          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
   # build_apk:
   #   needs: [build, set_release_info]
   #   runs-on: ubuntu-22.04

@@ -42,8 +42,8 @@ jobs:
           draft: false
           prerelease: true
       - name: Get upload URL
-      id: get_upload_url
-      run: echo "upload_url=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_OUTPUT
+        id: get_upload_url
+        run: echo "upload_url=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_OUTPUT
   # build_apk:
   #   needs: [build, set_release_info]
   #   runs-on: ubuntu-22.04

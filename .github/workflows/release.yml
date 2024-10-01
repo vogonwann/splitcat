@@ -25,26 +25,16 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   set_release_info:
-    name: Create release
     runs-on: ubuntu-latest
-    
+    outputs:
+      upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
     steps:
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ join('Release v0.1.0 Last Alpha Commit ',github.sha) }}
-          body: |
-            We have made some features! A new step to being complete.
-          draft: false
-          prerelease: true
       - name: Get upload URL
         id: get_upload_url
-        run: echo "upload_url=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_OUTPUT
-  # build_apk:
+        run: |
+          upload_url=$(curl -s "https://api.github.com/repos/vogonwann/splitcat/releases/latest" | jq -r '.upload_url' | sed 's/{?name,label}//')
+          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
+    # build_apk:
   #   needs: [build, set_release_info]
   #   runs-on: ubuntu-22.04
 

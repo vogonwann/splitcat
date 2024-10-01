@@ -405,10 +405,10 @@ jobs:
     - name: Get latest release upload URL
       id: get_latest_release
       run: |
-        REPO="vogonwann/splitcat"
-        LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
-        echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
-
+        $repo = "your-username/your-repo"  
+        $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest"
+        $uploadUrl = $latestRelease.upload_url -replace '{\?name,label}', ''
+        echo "::set-output name=upload_url::$uploadUrl"
   release:
     needs:
       - build

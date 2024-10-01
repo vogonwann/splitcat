@@ -405,7 +405,7 @@ jobs:
     - name: Get latest release upload URL
       id: get_latest_release
       run: |
-        $repo = "your-username/your-repo"  
+        $repo = "vogonwann/splitcat"  
         $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest"
         $uploadUrl = $latestRelease.upload_url -replace '{\?name,label}', ''
         echo "::set-output name=upload_url::$uploadUrl"

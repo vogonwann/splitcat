@@ -81,6 +81,8 @@ jobs:
   build_tar_x86_64:
     needs: build
     runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -124,10 +126,18 @@ jobs:
           tar -czvf ../../../../../result.tar.gz *
 
       - name: Upload tar.gz archive
+        id: upload_tar_64
         uses: actions/upload-artifact@v4
         with:
           name: tar-gz-x86-64-result
           path: ./*.tar.gz
+      
+      - name: Get latest release upload URL
+        id: get_latest_release
+        run: |
+          REPO="vogonwann/splitcat"
+          LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
+          echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
 
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
@@ -165,11 +175,14 @@ jobs:
   build_deb_x86_64:
     needs: build
     runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
+        id: deb_release
         run: |
           sudo apt-get update
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
@@ -203,13 +216,22 @@ jobs:
             echo "File not found: ${{ steps.find_deb.outputs.deb_path }}"
             exit 1
           fi
+      - id: step_upload_url
+        run: echo "::set-output name=upload_url::${{ steps.deb_release.outputs.upload_url }}"
 
       - name: Upload deb file
         uses: actions/upload-artifact@v4
+        id: upload_deb
         with:
           name: deb-x86-64-result
           path: ${{ steps.find_deb.outputs.deb_path }}
 
+      - name: Get latest release upload URL
+        id: get_latest_release
+        run: |
+          REPO="vogonwann/splitcat"
+          LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
+          echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_deb_arm_64:
@@ -255,6 +277,8 @@ jobs:
   build_appimage_x86_64:
     needs: build
     runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -315,10 +339,19 @@ jobs:
           name: appimage-x86-64-result
           path: ./*.AppImage
 
+      - name: Get latest release upload URL
+        id: get_latest_release
+        run: |
+          REPO="vogonwann/splitcat"
+          LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
+          echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
+
   build_windows_zip_x86_64:
     needs: build
 
     runs-on: windows-latest
+    outputs:
+      upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
 
     steps:
     - name: Fix long file paths
@@ -368,6 +401,13 @@ jobs:
       with:
         name: windows-zip-x86-64-result
         path: Splitcat.zip
+
+    - name: Get latest release upload URL
+      id: get_latest_release
+      run: |
+        REPO="vogonwann/splitcat"
+        LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest")
+        echo "::set-output name=upload_url::$(echo $LATEST_RELEASE | jq -r '.upload_url' | sed 's/{?name,label}//')"
 
   release:
     needs:
@@ -451,7 +491,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+          upload_url: ${{ needs.build_tar_x86_64.outputs.upload_url }}
           asset_path: result.tar.gz
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz
           asset_content_type: application/gzip
@@ -494,7 +534,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+          upload_url: ${{ needs.build_deb_x86_64.outputs.upload_url }}
           asset_path: result.deb
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.deb
           asset_content_type: application/vnd.debian.binary-package
@@ -542,7 +582,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+          upload_url: ${{ needs.build_appimage_x86_64.outputs.upload_url }}
           asset_path: result.AppImage
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.AppImage
           asset_content_type: application/x-appimage
@@ -562,7 +602,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+          upload_url: ${{ needs.build_windows_zip_x86_64.outputs.upload_url }}
           asset_path: result.zip
           asset_name: Splitcat-${{ needs.build.outputs.version }}-windows-x86-64.zip
           asset_content_type: application/zip

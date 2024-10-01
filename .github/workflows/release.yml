@@ -44,7 +44,7 @@ jobs:
           echo "::set-output name=version::$version"
 
   # build_apk:
-  #   needs: build
+  #   needs: [build, set_release_info]
   #   runs-on: ubuntu-22.04
 
   #   steps:
@@ -154,7 +154,7 @@ jobs:
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_tar_arm_64:
-    # needs: build
+    # needs: [build, set_release_info]
     # runs-on: [ self-hosted, linux, arm64 ]
 
     # steps:
@@ -185,7 +185,7 @@ jobs:
     #       path: ./*.tar.gz
 
   build_deb_x86_64:
-    needs: build
+    needs: [build, set_release_info]
     runs-on: ubuntu-20.04
 
     steps:
@@ -237,7 +237,7 @@ jobs:
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_deb_arm_64:
-    # needs: build
+    # needs: [build, set_release_info]
     # runs-on: [ self-hosted, linux, arm64 ]
 
     # steps:
@@ -277,7 +277,7 @@ jobs:
     #       path: ${{ steps.find_deb.outputs.deb_path }}
 
   build_appimage_x86_64:
-    needs: build
+    needs: [build, set_release_info]
     runs-on: ubuntu-20.04
 
     steps:
@@ -340,7 +340,7 @@ jobs:
           path: ./*.AppImage
 
   build_windows_zip_x86_64:
-    needs: build
+    needs: [build, set_release_info]
 
     runs-on: windows-latest
     
@@ -395,6 +395,7 @@ jobs:
   release:
     needs:
       - build
+      - set_release_info
       # - build_apk
       - build_tar_x86_64
       # - build_tar_arm_64

@@ -469,7 +469,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.set_release_info.outputs.UPLOAD_URL }}
+          upload_url: "$OUTPUT_URL"
           asset_path: result.tar.gz
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz
           asset_content_type: application/gzip

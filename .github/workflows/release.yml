@@ -34,6 +34,9 @@ jobs:
           version="0.1.0"
           echo "UPLOAD_URL=$upload_url" >> $GITHUB_OUTPUT
 
+      - name: Echo url and version
+        run: echo("$UPLOAD_URL - $VERSION")
+
   # build_apk:
   #   needs: build
   #   runs-on: ubuntu-22.04

@@ -470,7 +470,7 @@ jobs:
 
       - name: Upload tar.gz
         run: |
-         -H "Authorization: token $GITHUB_TOKEN" \
+          curl f-H "Authorization: token $GITHUB_TOKEN" \
           -H "Content-Type: application/gzip" \
           --data-binary Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz \
           "https://uploads.github.com/repos/hubot/singularity/releases/${{ needs.build.outputs.version }}/assets?name=Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz"

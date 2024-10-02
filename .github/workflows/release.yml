@@ -500,7 +500,7 @@ jobs:
         
 
       - name: Upload RPM to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
           files: ~/rpmbuild/RPMS/x86_64/*.rpm
@@ -544,7 +544,7 @@ jobs:
   #         path: ./result-arm64.tar.gz
 
   #     - name: Upload tar.gz to Release
-  #       uses: softprops/action-gh-release@v1
+  #       uses: softprops/action-gh-release@v2
   #       with:
   #         tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
   #         files: ./result-arm64.tar.gz
@@ -596,7 +596,7 @@ jobs:
   #         path: ~/deb-arm64-package.deb
       
   #     - name: Upload deb_64 to Release
-  #       uses: softprops/action-gh-release@v1
+  #       uses: softprops/action-gh-release@v2
   #       with:
   #         tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
   #         files: ./deb-arm64-package.deb
@@ -652,7 +652,7 @@ jobs:
   #         path: ~/rpmbuild/RPMS/arm64/*.rpm
 
   #     - name: Upload rpm_arm64 to Release
-  #       uses: softprops/action-gh-release@v1
+  #       uses: softprops/action-gh-release@v2
   #       with:
   #         tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
   #         files: ./rpm-arm64-result.rpm
@@ -707,7 +707,7 @@ jobs:
   #         path: ./splitcat-1rm64.AppImage
 
   #     - name: Upload AppImage to Release
-  #       uses: softprops/action-gh-release@v1
+  #       uses: softprops/action-gh-release@v2
   #       with:
   #         tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
   #         files: ./splitcat-1rm64.AppImage

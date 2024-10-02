@@ -450,6 +450,272 @@ jobs:
         asset_name: ${{ steps.zip_file.outputs.zip_name }}  # Ime ZIP fajla
         asset_content_type: application/zip  # MIME tip za ZIP
 
+  build_rpm_x86_64:
+    needs: [build, create_release]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev rpm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Dependencies
+        working-directory: ./
+        run: flutter pub get
+
+      - name: Compile linux
+        working-directory: ./
+        run: flutter build linux --release
+
+      - name: Create RPM package
+        run: |
+          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cp build/linux/x64/release/bundle/* ~/rpmbuild/SOURCES/
+          echo "Name: splitcat" > ~/rpmbuild/SPECS/splitcat.spec
+          echo "Version: 1.0" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Release: 1" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Summary: SplitCat Application" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "License: MIT" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Source0: %{name}-%{version}.tar.gz" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%description" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "SplitCat is an application for file splitting." >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%files" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "/usr/bin/splitcat" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%changelog" >> ~/rpmbuild/SPECS/splitcat.spec
+          rpmbuild -ba ~/rpmbuild/SPECS/splitcat.spec
+
+      - name: Upload RPM file
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-x86-64-result
+          path: ~/rpmbuild/RPMS/x86_64/*.rpm
+        
+
+      - name: Upload RPM to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
+          files: ~/rpmbuild/RPMS/x86_64/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_tar_arm64:
+    needs: [build, create_release]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Dependencies
+        working-directory: ./
+        run: flutter pub get
+
+      - name: Compile linux for ARM64
+        working-directory: ./
+        run: flutter build linux --release --target-platform=linux-arm64
+
+      - name: Create tar.gz archive for ARM64
+        run: |
+          cd build/linux/arm64/release/bundle
+          tar -czvf ../../../../../result-arm64.tar.gz *
+
+      - name: Upload tar.gz file
+        uses: actions/upload-artifact@v4
+        with:
+          name: tar-arm64-result
+          path: ./result-arm64.tar.gz
+
+      - name: Upload tar.gz to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
+          files: ./result-arm64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_deb_arm64:
+    needs: [build, create_release]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev debhelper
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Dependencies
+        working-directory: ./
+        run: flutter pub get
+
+      - name: Compile linux for ARM64
+        working-directory: ./
+        run: flutter build linux --release --target-platform=linux-arm64
+
+      - name: Create DEB package for ARM64
+        run: |
+          mkdir -p ~/deb-package/DEBIAN
+          echo "Package: splitcat" > ~/deb-package/DEBIAN/control
+          echo "Version: 1.0" >> ~/deb-package/DEBIAN/control
+          echo "Section: utils" >> ~/deb-package/DEBIAN/control
+          echo "Priority: optional" >> ~/deb-package/DEBIAN/control
+          echo "Architecture: arm64" >> ~/deb-package/DEBIAN/control
+          echo "Maintainer: Your Name <you@example.com>" >> ~/deb-package/DEBIAN/control
+          echo "Description: SplitCat Application" >> ~/deb-package/DEBIAN/control
+          cp -r build/linux/arm64/release/bundle/* ~/deb-package/usr/local/bin/
+          dpkg-deb --build ~/deb-package
+
+      - name: Upload DEB file
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-arm64-result
+          path: ~/deb-arm64-package.deb
+      
+      - name: Upload deb_64 to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
+          files: ./deb-arm64-package.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_rpm_arm64:
+    needs: [build, create_release]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev rpm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Dependencies
+        working-directory: ./
+        run: flutter pub get
+
+      - name: Compile linux for ARM64
+        working-directory: ./
+        run: flutter build linux --release --target-platform=linux-arm64
+
+      - name: Create RPM package for ARM64
+        run: |
+          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cp build/linux/arm64/release/bundle/* ~/rpmbuild/SOURCES/
+          echo "Name: splitcat" > ~/rpmbuild/SPECS/splitcat.spec
+          echo "Version: 1.0" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Release: 1" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Summary: SplitCat Application" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "License: MIT" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "Source0: %{name}-%{version}.tar.gz" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%description" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "SplitCat is an application for file splitting." >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%files" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "/usr/bin/splitcat" >> ~/rpmbuild/SPECS/splitcat.spec
+          echo "%changelog" >> ~/rpmbuild/SPECS/splitcat.spec
+          rpmbuild -ba ~/rpmbuild/SPECS/splitcat.spec
+
+      - name: Upload RPM file
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-arm64-result
+          path: ~/rpmbuild/RPMS/arm64/*.rpm
+
+      - name: Upload rpm_arm64 to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
+          files: ./rpm-arm64-result.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_appimage_arm64:
+    needs: [build, create_release]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Dependencies
+        working-directory: ./
+        run: flutter pub get
+
+      - name: Compile linux for ARM64
+        working-directory: ./
+        run: flutter build linux --release --target-platform=linux-arm64
+
+      - name: Copy compiled linux files
+        run: |
+          mkdir AppDir
+          cp -r build/linux/arm64/release/bundle/* AppDir/
+
+      - name: Copy logo to AppDir
+        run: |
+          mkdir -p AppDir/usr/share/icons/hicolor/16x16/apps
+          cp /home/runner/work/splitcat/splitcat/linux/flutter/assets/icons/16x16/icon.png AppDir/usr/share/icons/hicolor/16x16/apps/splitcat.png
+          mkdir -p AppDir/usr/share/applications
+          cp /home/runner/work/splitcat/splitcat/linux/flutter/assets/app.desktop AppDir/usr/share/applications/splitcat.desktop
+
+      - name: Create AppImage for ARM64
+        run: |
+          AppImageAssigner --app-name splitcat --app-version 1.0 --arch arm64 AppDir splitcat.AppImage
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: appimage-arm64-result
+          path: ./splitcat-1rm64.AppImage
+
+      - name: Upload AppImage to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
+          files: ./splitcat-1rm64.AppImage
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+
   release:
     needs:
       - build

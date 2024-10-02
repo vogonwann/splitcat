@@ -233,7 +233,7 @@ jobs:
         id: find_deb
         run: |
           VERSION=${{ needs.build.outputs.version }}
-          DEB_PATH=$(find dist -name "splitcat-$VERSION*-linux.deb")
+          DEB_PATH=$(find dist -name "splitcat-$VERSION-linux.deb")
           echo "deb_path=$DEB_PATH" >> $GITHUB_OUTPUT
 
       - name: Check if deb file exists

@@ -24,23 +24,23 @@ jobs:
           VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-  set_release_info:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
-    steps:
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag: ${{ needs.build.outputs.version }}
-      - name: Get upload URL
-        id: get_upload_url
-        run: |
-          upload_url=${{steps.get_release.outputs.upload_url}}
-          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
+  # set_release_info:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
+  #   steps:
+  #     - name: Get release
+  #       id: get_release
+  #       uses: bruceadams/get-release@v1.3.2
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #       with:
+  #         tag: ${{ needs.build.outputs.version }}
+  #     - name: Get upload URL
+  #       id: get_upload_url
+  #       run: |
+  #         upload_url=${{steps.get_release.outputs.upload_url}}
+  #         echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
     # build_apk:
   #   needs: [build, set_release_info]
   #   runs-on: ubuntu-22.04
@@ -98,7 +98,7 @@ jobs:
   #           ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-x86_64-release.apk
 
   build_tar_x86_64:
-    needs: [build, set_release_info]
+    needs: [build]
     runs-on: ubuntu-20.04
 
     steps:
@@ -183,7 +183,7 @@ jobs:
     #       path: ./*.tar.gz
 
   build_deb_x86_64:
-    needs: [build, set_release_info]
+    needs: [build]
     runs-on: ubuntu-20.04
 
     steps:
@@ -275,7 +275,7 @@ jobs:
     #       path: ${{ steps.find_deb.outputs.deb_path }}
 
   build_appimage_x86_64:
-    needs: [build, set_release_info]
+    needs: [build]
     runs-on: ubuntu-20.04
 
     steps:
@@ -338,7 +338,7 @@ jobs:
           path: ./*.AppImage
 
   build_windows_zip_x86_64:
-    needs: [build, set_release_info]
+    needs: [build]
 
     runs-on: windows-latest
     
@@ -393,7 +393,7 @@ jobs:
   release:
     needs:
       - build
-      - set_release_info
+      # - set_release_info
       # - build_apk
       - build_tar_x86_64
       # - build_tar_arm_64
@@ -516,7 +516,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.set_release_info.outputs.upload_url }}
+          upload_url: ${{ steps.draft_release.outputs.upload_url }}
           asset_path: result.deb
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.deb
           asset_content_type: application/vnd.debian.binary-package
@@ -564,7 +564,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.set_release_info.outputs.upload_url }}
+          upload_url: ${{ steps.draft_release.outputs.upload_url }}
           asset_path: result.AppImage
           asset_name: Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.AppImage
           asset_content_type: application/x-appimage
@@ -584,7 +584,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.set_release_info.outputs.upload_url }}
+          upload_url: ${{ steps.draft_release.outputs.upload_url }}
           asset_path: result.zip
           asset_name: Splitcat-${{ needs.build.outputs.version }}-windows-x86-64.zip
           asset_content_type: application/zip

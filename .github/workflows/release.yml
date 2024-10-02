@@ -258,7 +258,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: splitcat-${{ needs.build.outputs.version }}-linux.deb$
+          asset_path: splitcat-${{ needs.build.outputs.version }}-linux.deb
           asset_name: splitcat-linux-x64.deb
           asset_content_type: application/x-debian-package
 

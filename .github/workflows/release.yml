@@ -167,7 +167,14 @@ jobs:
         with:
           name: tar-gz-x86-64-result
           path: ./*.tar.gz
-
+      # Dodaj korak za upload tar.gz fajla na release
+      - name: Upload tar.gz to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+          asset_path: ./build/result.tar.gz
+          asset_name: splitcat-linux-x64.tar.gz
+          asset_content_type: application/gzip
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.
   # build_tar_arm_64:
@@ -366,11 +373,21 @@ jobs:
         with:
           recipe: ./AppImageBuilder.yml
 
-      - name: Upload AppImage file
-        uses: actions/upload-artifact@v4
+      - name: Find AppImage file
+        id: find_appimage
+        run: |
+          APPIMAGE_PATH=$(find . -name "*.AppImage" -print -quit)
+          echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
+          echo "appimage_name=$(basename "$APPIMAGE_PATH")" >> $GITHUB_OUTPUT
+  
+
+      - name: Upload AppImage to release
+        uses: actions/upload-release-asset@v1
         with:
-          name: appimage-x86-64-result
-          path: ./*.AppImage
+          upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+          asset_path: ${{ steps.find_appimage.outputs.appimage_path }}  
+          asset_name: ${{ steps.find_appimage.outputs.appimage_name }}
+          asset_content_type: application/octet-stream  # MIME tip za AppImage
 
   build_windows_zip_x86_64:
     needs: [build, create_release]
@@ -418,13 +435,21 @@ jobs:
 
     - name: Zip compiled files
       working-directory: ./
-      run: Compress-Archive -Path build/windows/runner/Release/* -DestinationPath Splitcat.zip
+      id: zip_file
+      run: | 
+          $zipPath = "Splitcat.zip"
+          Compress-Archive -Path build/windows/runner/Release/* -DestinationPath $zipPath
+          echo "zip_path=$zipPath" >> $GITHUB_OUTPUT
+          echo "zip_name=$(basename $zipPath)" >> $GITHUB_OUTPUT
 
-    - name: Upload zip
-      uses: actions/upload-artifact@v4
+    - name: Upload ZIP file
+      uses: actions/upload-release-asset@v1
       with:
-        name: windows-zip-x86-64-result
-        path: Splitcat.zip
+        upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+        asset_path: ${{ steps.zip_file.outputs.zip_path }}  # Putanja do generisanog ZIP fajla
+        asset_name: ${{ steps.zip_file.outputs.zip_name }}  # Ime ZIP fajla
+        asset_content_type: application/zip  # MIME tip za ZIP
+
   release:
     needs:
       - build

@@ -229,11 +229,16 @@ jobs:
         working-directory: ./
         run: flutter_distributor package --platform linux --targets deb --flutter-build-args=verbose
 
+      - name: List files in dist
+        run: ls -la dist
+      - name: Test version
+        run: echo ${{ needs.build.outputs.version }}
+
       - name: Find deb file
         id: find_deb
         run: |
           VERSION=${{ needs.build.outputs.version }}
-          DEB_PATH=$(find dist -name "splitcat-$VERSION-linux.deb")
+          DEB_PATH=$(find dist -name "splitcat-$VERSION*-linux.deb")
           echo "deb_path=$DEB_PATH" >> $GITHUB_OUTPUT
 
       - name: Check if deb file exists

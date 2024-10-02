@@ -34,6 +34,8 @@ jobs:
         uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag: ${{ needs.build.outputs.version }}
       - name: Get upload URL
         id: get_upload_url
         run: |

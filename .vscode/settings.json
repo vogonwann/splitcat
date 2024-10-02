@@ -7,5 +7,6 @@
         "**/.dart_tool": true,
         ".flatpak/**": true,
         "_build/**": true
-    }
+    },
+    "cmake.sourceDirectory": "/home/wann/Development/splitcat/linux"
 }

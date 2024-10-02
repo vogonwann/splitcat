@@ -24,78 +24,95 @@ jobs:
           VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-  set_release_info:
+  # set_release_info:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
+  #   steps:
+  #     - name: Get release
+  #       id: get_release
+  #       uses: bruceadams/get-release@v1.3.2
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #       with:
+  #         tag: ${{ needs.build.outputs.version }}
+  #     - name: Get upload URL
+  #       id: get_upload_url
+  #       run: |
+  #         upload_url=${{steps.get_release.outputs.upload_url}}
+  #         echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
+    # Step 2: Create a GitHub release
+  create_release:
+    needs: build
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
     steps:
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ needs.build.outputs.version }}
-      - name: Get upload URL
-        id: get_upload_url
-        run: |
-          upload_url=${{steps.get_release.outputs.upload_url}}
-          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
-  build_apk:
-    needs: [build]
-    runs-on: ubuntu-22.04
+          tag_name: "v${{ needs.build.outputs.version }}"
+          release_name: "v${{ needs.build.outputs.version }}"
+          draft: true
+          prerelease: false
+    # build_apk:
+    #   needs: [build]
+    #   runs-on: ubuntu-22.04
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    # steps:
+    #   - name: Checkout repository
+    #     uses: actions/checkout@v4
 
-      - name: Remove proprietary dependencies
-        run: sh scripts/remove_proprietary_dependencies.sh
+    #   - name: Remove proprietary dependencies
+    #     run: sh scripts/remove_proprietary_dependencies.sh
 
-      - name: Copy files to env.APK_BUILD_DIR
-        run: |
-          mkdir -p $APK_BUILD_DIR
-          cp -r . $APK_BUILD_DIR
+    #   - name: Copy files to env.APK_BUILD_DIR
+    #     run: |
+    #       mkdir -p $APK_BUILD_DIR
+    #       cp -r . $APK_BUILD_DIR
 
-      - name: Decode key.properties file
-        working-directory: ${{ env.APK_BUILD_DIR }}
-        env:
-          ENCODED_STRING: ${{ secrets.ANDROID_KEY_PROPERTIES }}
-        run: echo $ENCODED_STRING | base64 -di > android/key.properties
+    #   - name: Decode key.properties file
+    #     working-directory: ${{ env.APK_BUILD_DIR }}
+    #     env:
+    #       ENCODED_STRING: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+    #     run: echo $ENCODED_STRING | base64 -di > android/key.properties
 
-      - name: Decode android-keystore.jks file
-        working-directory: ${{ env.APK_BUILD_DIR }}
-        env:
-          ENCODED_STRING: ${{ secrets.ANDROID_KEY_STORE }}
-        run: mkdir secrets && echo $ENCODED_STRING | base64 -di > secrets/android-keystore.jks
+    #   - name: Decode android-keystore.jks file
+    #     working-directory: ${{ env.APK_BUILD_DIR }}
+    #     env:
+    #       ENCODED_STRING: ${{ secrets.ANDROID_KEY_STORE }}
+    #     run: mkdir secrets && echo $ENCODED_STRING | base64 -di > secrets/android-keystore.jks
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+    #   - name: Set up JDK 17
+    #     uses: actions/setup-java@v4
+    #     with:
+    #       distribution: 'temurin'
+    #       java-version: '17'
 
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+    #   - name: Install Flutter
+    #     uses: subosito/flutter-action@v2
+    #     with:
+    #       flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Dependencies
-        working-directory: ${{ env.APK_BUILD_DIR }}/
-        run: flutter pub get
+    #   - name: Dependencies
+    #     working-directory: ${{ env.APK_BUILD_DIR }}/
+    #     run: flutter pub get
 
-      - name: Build APK
-        working-directory: ${{ env.APK_BUILD_DIR }}/
-        run: flutter build apk --split-per-abi
+    #   - name: Build APK
+    #     working-directory: ${{ env.APK_BUILD_DIR }}/
+    #     run: flutter build apk --split-per-abi
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk-result
-          path: |
-            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-x86_64-release.apk
+    #   - name: Upload APK
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: apk-result
+    #       path: |
+    #         ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+    #         ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+    #         ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-x86_64-release.apk
 
   build_tar_x86_64:
     needs: [build]
@@ -231,6 +248,17 @@ jobs:
         with:
           name: deb-x86-64-result
           path: ${{ steps.find_deb.outputs.deb_path }}
+
+      # Upload DEB file to release
+      - name: Upload DEB to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: splitcat-${{ needs.build.outputs.version }}-linux.deb$
+          asset_name: splitcat-linux-x64.deb
+          asset_content_type: application/x-debian-package
 
   # Manage the Flutter version on the self-hosted runner manually!
   # Flutter currently doesn't provide Linux ARM64 binaries.

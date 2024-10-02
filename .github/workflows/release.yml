@@ -470,7 +470,8 @@ jobs:
 
       - name: Upload tar.gz
         run: |
-          curl f-H "Authorization: token $GITHUB_TOKEN" \
+          curl \
+          -H "Authorization: token ${{secrets.GITHUB_TOKEN}}" \
           -H "Content-Type: application/gzip" \
           --data-binary Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz \
           "https://uploads.github.com/repos/vogonwann/splitcat/releases/${{ needs.build.outputs.version }}/assets?name=Splitcat-${{ needs.build.outputs.version }}-linux-x86-64.tar.gz"

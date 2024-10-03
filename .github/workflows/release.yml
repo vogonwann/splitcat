@@ -172,7 +172,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-          asset_path: ./build/tar-gz-x86-64-result.tar.gz
+          asset_path: ./*.tar.gz
           asset_name: splitcat-linux-x64.tar.gz
           asset_content_type: application/gzip
   # Manage the Flutter version on the self-hosted runner manually!
@@ -437,10 +437,10 @@ jobs:
       working-directory: ./
       id: zip_file
       run: | 
-          $zipPath = "Splitcat.zip"
+          zipPath = "Splitcat.zip"
           Compress-Archive -Path build/windows/runner/Release/* -DestinationPath $zipPath
-          echo "zip_path=$zipPath" >> $GITHUB_OUTPUT
-          echo "zip_name=$(basename $zipPath)" >> $GITHUB_OUTPUT
+          echo "zip_path=$ZIP_PATH" >> $GITHUB_OUTPUT
+          echo "zip_name=$(basename $ZIP_NAME)" >> $GITHUB_OUTPUT
 
     - name: Upload ZIP file
       uses: actions/upload-release-asset@v1
@@ -452,60 +452,66 @@ jobs:
 
   build_rpm_x86_64:
     needs: [build, create_release]
-    runs-on: ubuntu-20.04
-
+    runs-on: ubuntu-latest
+    container: fedora:38
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev rpm
+    - name: Install dependencies
+      run: sudo dnf install -y clang cmake gtk3-devel ninja-build libappindicator-gtk3-devel jq findutils which git patchelf rpm-build
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: "stable"
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: "stable"
 
-      - name: Dependencies
-        working-directory: ./
-        run: flutter pub get
+    - name: Configure safe directory for Git
+      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64"
 
-      - name: Compile linux
-        working-directory: ./
-        run: flutter build linux --release
+#      - name: Configure safe directory for Git (pub-cache)
+#        run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache"
 
-      - name: Create RPM package
-        run: |
-          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-          cp -r build/linux/x64/release/bundle/* ~/rpmbuild/SOURCES/
-          echo "Name: splitcat" > ~/rpmbuild/SPECS/splitcat.spec
-          echo "Version: 1.0" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "Release: 1" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "Summary: SplitCat Application" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "License: MIT" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "Source0: %{name}-%{version}.tar.gz" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "%description" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "SplitCat is an application for file splitting." >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "%files" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "/usr/bin/splitcat" >> ~/rpmbuild/SPECS/splitcat.spec
-          echo "%changelog" >> ~/rpmbuild/SPECS/splitcat.spec
-          rpmbuild -ba ~/rpmbuild/SPECS/splitcat.spec
+    - name: Get flutter path
+      run: which flutter
 
-      - name: Upload RPM file
-        uses: actions/upload-artifact@v4
-        with:
-          name: rpm-x86-64-result
-          path: ~/rpmbuild/RPMS/x86_64/*.rpm
+    - name: Get dart path
+      run: which dart
+
+    - name: Enable dart_distributor
+      run: PUB_CACHE=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache dart pub global activate flutter_distributor
+
+    - name: Debugging PATH and flutter_distributor
+      run: |
+        echo "PATH: $PATH"
+        command -v flutter_distributor || echo "flutter_distributor not found"
+
+    - name: Build rpm package
+      working-directory: app
+      run: FLUTTER_ROOT=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
+
+    - name: Find AppImage file
+      id: find_rpm
+      run: |
+        APPIMAGE_PATH=$(find . -name "*.rpm" -print -quit)
+        echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
+        echo "appimage_name=$(basename "$APPIMAGE_PATH")" >> $GITHUB_OUTPUT
         
+    - name: Check if rpm file exists
+      id: check_file
+      run: |
+        if [[ ! -f "${{ steps.find_rpm.outputs.rpm_path }}" ]]; then
+          echo "File not found: ${{ steps.find_rpm.outputs.rpm_path }}"
+          exit 1
+        fi
+  
 
-      - name: Upload RPM to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ needs.build.outputs.version }}  # Treba se podudarati sa prethodnim korakom
-          files: ~/rpmbuild/RPMS/x86_64/*.rpm
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload AppImage to release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+        asset_path: ${{ steps.find_rpm.outputs.appimage_path }}  
+        asset_name: ${{ steps.find_rpm.outputs.appimage_name }}
+        asset_content_type: application/octet-stream
 
   # build_tar_arm64:
   #   needs: [build, create_release]

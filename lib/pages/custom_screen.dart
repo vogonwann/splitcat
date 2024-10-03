@@ -48,7 +48,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
 
       // Kreiraj novi fajl za svaki chunk (imeFajla.i)
       String chunkFileName =
-          '$filePath.part${(i + 1) < 10 ? "0${i + 1}" : {i + 1}}';
+          '$filePath.part${(i + 1) < 10 ? "0${i + 1}" : i + 1}';
       var chunkFile = File(chunkFileName);
 
       // Snimi chunk u fajl

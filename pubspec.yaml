@@ -23,10 +23,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icons/16x16
-    - assets/icons/32x32
-    - assets/icons/64x64
-    - assets/icons/128x128
-    - assets/icons/256x256
+    - linux/flutter/assets/icons/16x16/icon.png
+    - linux/flutter/assets/icons/32x32/icon.png
+    - linux/flutter/assets/icons/64x64/icon.png
+    - linux/flutter/assets/icons/128x128/icon.png
+    - linux/flutter/assets/icons/256x256/icon.png
 flutter_gen:
   line_length: 150

@@ -21,61 +21,70 @@ jobs:
           VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' app/pubspec.yaml)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-  build_rpm:
+  build_rpm_x86_64:
+    needs: [build, create_release]
     runs-on: ubuntu-latest
     container: fedora:38
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo dnf install -y clang cmake gtk3-devel ninja-build libappindicator-gtk3-devel jq findutils which git patchelf rpm-build
+    - name: install dependencies
+      run: sudo dnf install -y clang cmake gtk3-devel ninja-build libappindicator-gtk3-devel jq findutils which git patchelf rpm-build
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: "stable"
+    - name: Configure safe directory for Git
+      run: git config --global --add safe.directory /__t/flutter/stable-${{ env.FLUTTER_VERSION }}-x64
 
-      - name: Configure safe directory for Git
-        run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64"
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: "stable"
 
-#      - name: Configure safe directory for Git (pub-cache)
-#        run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache"
+    - name: configure safe directory for git
+      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64"
 
-      - name: Get flutter path
-        run: which flutter
+    - name: get flutter path
+      run: which flutter
 
-      - name: Get dart path
-        run: which dart
+    - name: get dart path
+      run: which dart
 
-      - name: Enable dart_distributor
-        run: PUB_CACHE=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache dart pub global activate flutter_distributor
+    - name: enable dart_distributor
+      run: pub_cache=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache dart pub global activate flutter_distributor
 
-      - name: Debugging PATH and flutter_distributor
-        run: |
-          echo "PATH: $PATH"
-          command -v flutter_distributor || echo "flutter_distributor not found"
+    - name: debugging path and flutter_distributor
+      run: |
+        echo "path: $path"
+        command -v flutter_distributor || echo "flutter_distributor not found"
 
-      - name: Build rpm package
-        working-directory: app
-        run: FLUTTER_ROOT=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
+    # dodato: proverava direktorijum
+    - name: list files in working directory
+      run: ls -al
 
-      - name: Find rpm file
-        id: find_rpm
-        run: |
-          VERSION=${{ needs.build.outputs.version }}
-          RPM_PATH=$(find app/dist -name "localsend_app-$VERSION*-linux.rpm")
-          echo "rpm_path=$RPM_PATH" >> $GITHUB_OUTPUT
+    - name: build rpm package
+      working-directory: app  # komentarisano jer 'app' možda nije ispravan
+      run: flutter_root=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
 
-      - name: Check if rpm file exists
-        id: check_file
-        run: |
-          if [[ ! -f "${{ steps.find_rpm.outputs.rpm_path }}" ]]; then
-            echo "File not found: ${{ steps.find_rpm.outputs.rpm_path }}"
-            exit 1
-          fi
+    - name: find rpm file
+      id: find_rpm
+      run: |
+        rpm_path=$(find . -name "*.rpm" -print -quit)
+        echo "rpm_path=$rpm_path" >> $github_output
+        echo "rpm_name=$(basename "$rpm_path")" >> $github_output
 
-      - name: Upload rpm file
-        uses: actions/upload-artifact@v4
-        with:
-          name: rpm-result
-          path: ${{ steps.find_rpm.outputs.rpm_path }}
+    - name: check if rpm file exists
+      id: check_file
+      run: |
+        if [[ ! -f "${{ steps.find_rpm.outputs.rpm_path }}" ]]; then
+          echo "file not found: ${{ steps.find_rpm.outputs.rpm_path }}"
+          exit 1
+        fi
+
+    - name: upload rpm to release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find_rpm.outputs.rpm_path }}
+        asset_name: ${{ steps.find_rpm.outputs.rpm_name }}
+        asset_content_type: application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -165,14 +165,22 @@ jobs:
         id: upload_tar_64
         uses: actions/upload-artifact@v4
         with:
-          name: tar-gz-x86-64-result
+          name: splitcat-linux-x64
           path: ./*.tar.gz
+      
+      - name: Find tar.gz file
+        id: find_targz
+        run: |
+          VERSION=${{ needs.build.outputs.version }}
+          TARGZ_PATH=$(find dist -name "splitcat-$VERSION*-linux.tar.gz")
+          echo "targz_path=$TARGZ_PATH" >> $GITHUB_OUTPUT
+
       # Dodaj korak za upload tar.gz fajla na release
       - name: Upload tar.gz to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-          asset_path: ./*.tar.gz
+          asset_path: ${{ steps.find_targz.outputs.targz_path }}
           asset_name: splitcat-linux-x64.tar.gz
           asset_content_type: application/gzip
   # Manage the Flutter version on the self-hosted runner manually!

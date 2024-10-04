@@ -5,9 +5,10 @@ on:
 
 jobs:
   build_windows_zip_x86_64:
+    needs: [build, create_release]
 
     runs-on: windows-latest
-
+    
     steps:
     - name: Fix long file paths
       run: git config --system core.longpaths true
@@ -19,6 +20,15 @@ jobs:
       with:
             flutter-version: ${{ env.FLUTTER_VERSION }}
             channel: "stable"
+    
+    - name: Clean previous builds
+      run: flutter clean
+
+    - name: Show current dir
+      run: pwd
+
+    - name: List current dir
+      run: ls windows
 
     - name: Dependencies
       working-directory: ./
@@ -26,26 +36,40 @@ jobs:
 
     - name: Compile for Windows
       working-directory: ./
-      run: flutter build windows --release
+      run: flutter build windows --release --verbose
 
     - name: Create empty settings.json
       working-directory: ./
-      run: echo {} > D:\a\splitcat\splitcat\build\windows\x64\runner\Release\settings.json
+      run: |
+            if (-Not (Test-Path -Path D:\a\splitcat\splitcat\build\windows\runner\Release)) {
+                New-Item -ItemType Directory -Path D:\a\splitcat\splitcat\build\windows\runner\Release
+            }
+            echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
+
+    - name: List DLL files
+      run: ls scripts/windows/x64/
 
     - name: Add DLL files
       working-directory: ./
       run: |
-            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
-            Copy-Item scripts/windows/x64/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
-            Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\x64\runner\Release\
+            Copy-Item scripts/windows/x64/msvcp140.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
+            Copy-Item scripts/windows/x64/vcruntime140.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
+            Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
 
     - name: Zip compiled files
-      working-directory: ./
-      run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath Splitcat.zip
+      working-directory: app
+      run: Compress-Archive -Path ../build/windows/runner/Release/* -DestinationPath LocalSend.zip
 
-    - name: Upload zip
-      uses: actions/upload-artifact@v4
+    - name: Check if ZIP file exists
+      run: ls app/
+
+    - name: Upload ZIP file
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: windows-zip-x86-64-result
-        path: Splitcat.zip
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: app/LocalSend.zip
+        asset_name: windows-zip-x86-64-result
+        asset_content_type: application/zip
     

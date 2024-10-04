@@ -171,18 +171,18 @@ jobs:
       - name: Find tar.gz file
         id: find_targz
         run: |
-          VERSION=${{ needs.build.outputs.version }}
           TARGZ_PATH=$(find ./ -name "*.tar.gz")
           echo "targz_path=$TARGZ_PATH" >> $GITHUB_OUTPUT
 
       - name: Echo targz path
         run: echo ${{ steps.find_targz.outputs.targz_path }}
 
-      # Dodaj korak za upload tar.gz fajla na release
       - name: Upload tar.gz to release
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ${{ steps.find_targz.outputs.targz_path }}
           asset_name: splitcat-linux-x64.tar.gz
           asset_content_type: application/gzip

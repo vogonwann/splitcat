@@ -393,63 +393,64 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install dependencies
+    - name: install dependencies
       run: sudo dnf install -y clang cmake gtk3-devel ninja-build libappindicator-gtk3-devel jq findutils which git patchelf rpm-build
 
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        flutter-version: ${{ env.flutter_version }}
         channel: "stable"
 
-    - name: Configure safe directory for Git
-      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64"
+    - name: configure safe directory for git
+      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64"
 
-#      - name: Configure safe directory for Git (pub-cache)
-#        run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache"
-
-    - name: Get flutter path
+    - name: get flutter path
       run: which flutter
 
-    - name: Get dart path
+    - name: get dart path
       run: which dart
 
-    - name: Enable dart_distributor
-      run: PUB_CACHE=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache dart pub global activate flutter_distributor
+    - name: enable dart_distributor
+      run: pub_cache=/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64/.pub-cache dart pub global activate flutter_distributor
 
-    - name: Debugging PATH and flutter_distributor
+    - name: debugging path and flutter_distributor
       run: |
-        echo "PATH: $PATH"
+        echo "path: $path"
         command -v flutter_distributor || echo "flutter_distributor not found"
 
-    - name: Build rpm package
-      working-directory: app
-      run: FLUTTER_ROOT=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
+    # dodato: proverava direktorijum
+    - name: list files in working directory
+      run: ls -al
 
-    - name: Find AppImage file
+    - name: build rpm package
+      # working-directory: app  # komentarisano jer 'app' možda nije ispravan
+      run: flutter_root=/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64 flutter_distributor package --platform linux --targets rpm
+
+    - name: find rpm file
       id: find_rpm
       run: |
-        APPIMAGE_PATH=$(find . -name "*.rpm" -print -quit)
-        echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
-        echo "appimage_name=$(basename "$APPIMAGE_PATH")" >> $GITHUB_OUTPUT
-        
-    - name: Check if rpm file exists
+        rpm_path=$(find . -name "*.rpm" -print -quit)
+        echo "rpm_path=$rpm_path" >> $github_output
+        echo "rpm_name=$(basename "$rpm_path")" >> $github_output
+
+    - name: check if rpm file exists
       id: check_file
       run: |
         if [[ ! -f "${{ steps.find_rpm.outputs.rpm_path }}" ]]; then
-          echo "File not found: ${{ steps.find_rpm.outputs.rpm_path }}"
+          echo "file not found: ${{ steps.find_rpm.outputs.rpm_path }}"
           exit 1
         fi
-  
 
-    - name: Upload AppImage to release
+    - name: upload rpm to release
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-        asset_path: ${{ steps.find_rpm.outputs.appimage_path }}  
-        asset_name: ${{ steps.find_rpm.outputs.appimage_name }}
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find_rpm.outputs.rpm_path }}
+        asset_name: ${{ steps.find_rpm.outputs.rpm_name }}
         asset_content_type: application/octet-stream
-
-  # build_tar_arm64:
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   # build_tar_arm64:
   #   needs: [build, create_release]
   #   runs-on: ubuntu-20.04
 

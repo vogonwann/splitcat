@@ -34,7 +34,7 @@ set -x
 
 
 # No spaces in project name.
-projectName=Splitcat
+projectName=splitcat
 projectId=lol.janjic.Splitcat
 executableName=splitcat
 
@@ -43,7 +43,7 @@ executableName=splitcat
 
 # Extract portable Flutter build.
 mkdir -p $projectName
-tar -xf $projectName-Linux-Portable.tar.gz -C $projectName
+tar -xf $projectName-linux-x64.tar.gz -C $projectName
 
 # Copy the portable app to the Flatpak-based location.
 cp -r $projectName /app/
@@ -54,14 +54,14 @@ ln -s /app/$projectName/$executableName /app/bin/$executableName
 # Install the icon.
 iconDir=/app/share/icons/hicolor/scalable/apps
 mkdir -p $iconDir
-cp -r assets/icons/$projectId.svg $iconDir/
+cp -r splitcat.svg $iconDir/splitcat.svg
 
 # Install the desktop file.
 desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
-cp -r packaging/linux/$projectId.desktop $desktopFileDir/
+cp -r $projectName.desktop $desktopFileDir/
 
 # Install the AppStream metadata file.
-metadataDir=/app/share/metainfo
-mkdir -p $metadataDir
-cp -r packaging/linux/$projectId.metainfo.xml $metadataDir/
+# metadataDir=/app/share/metainfo
+# mkdir -p $metadataDir
+# cp -r packaging/linux/$projectId.metainfo.xml $metadataDir/

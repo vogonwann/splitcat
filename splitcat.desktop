@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Splitcat
+Comment=Application for splitting and merging files
+Exec=splitcat
+Icon=splitcat
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=split;merge;files;

@@ -18,6 +18,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_gen_runner: 5.7.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/16x16
+    - assets/icons/32x32
+    - assets/icons/64x64
+    - assets/icons/128x128
+    - assets/icons/256x256
+flutter_gen:
+  line_length: 150

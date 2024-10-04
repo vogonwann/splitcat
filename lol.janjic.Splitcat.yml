@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
 
 ---
-app-id: com.example.FlutterApp
+app-id: lol.janjic.Splitcat
 runtime: org.freedesktop.Platform
 runtime-version: "22.08"
 sdk: org.freedesktop.Sdk
-command: flutter_flatpak_example
+command: splitcat
 separate-locales: false
 finish-args:
   - --share=ipc
@@ -24,8 +24,8 @@ modules:
       - "./build-flatpak.sh"
     sources:
       - type: file
-        url: https://github.com/vogowann/splitcat/releases/download/v0.1.0/splitcat.tar.gz
-        sha256: 5dc57e4f5b84e6527098cb1e011ef50413c660147f5da7dfbfb507527e44eb83
+        url: https://github.com/vogonwann/splitcat/releases/download/v0.1.0/splitcat-linux-x64.tar.gz
+        sha256: 1e191237c5dc43683be5db4e14c309ce2cc4567e732c7bebf910c81274504a79
       - type: dir
         path: ../splitcat
       # - type: git

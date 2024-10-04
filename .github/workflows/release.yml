@@ -344,6 +344,7 @@ jobs:
       with:
             flutter-version: ${{ env.FLUTTER_VERSION }}
             channel: "stable"
+    
     - name: Clean previous builds
       run: flutter clean
 
@@ -363,7 +364,12 @@ jobs:
 
     - name: Create empty settings.json
       working-directory: ./
-      run: echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
+      run: |
+            mkdir -p D:\a\splitcat\splitcat\build\windows\runner\Release
+            echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
+
+    - name: List DLL files
+      run: ls scripts/windows/x64/
 
     - name: Add DLL files
       working-directory: ./
@@ -374,7 +380,10 @@ jobs:
 
     - name: Zip compiled files
       working-directory: app
-      run: Compress-Archive -Path build/windows/runner/Release/* -DestinationPath LocalSend.zip
+      run: Compress-Archive -Path ../build/windows/runner/Release/* -DestinationPath LocalSend.zip
+
+    - name: Check if ZIP file exists
+      run: ls app/
 
     - name: Upload ZIP file
       uses: actions/upload-release-asset@v1
@@ -385,7 +394,6 @@ jobs:
         asset_path: app/LocalSend.zip
         asset_name: windows-zip-x86-64-result
         asset_content_type: application/zip
-
   build_rpm_x86_64:
     needs: [build, create_release]
     runs-on: ubuntu-latest

@@ -392,6 +392,9 @@ jobs:
     container: fedora:38
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Configure safe directory for Git
+      run: git config --global --add safe.directory /__t/flutter/stable-${{ env.FLUTTER_VERSION }}-x64
 
     - name: install dependencies
       run: sudo dnf install -y clang cmake gtk3-devel ninja-build libappindicator-gtk3-devel jq findutils which git patchelf rpm-build

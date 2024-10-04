@@ -401,11 +401,11 @@ jobs:
 
     - uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.flutter_version }}
+        flutter-version: ${{ env.FLUTTER_VERSION }}
         channel: "stable"
 
     - name: configure safe directory for git
-      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64"
+      run: git config --global --add safe.directory "/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64"
 
     - name: get flutter path
       run: which flutter
@@ -414,7 +414,7 @@ jobs:
       run: which dart
 
     - name: enable dart_distributor
-      run: pub_cache=/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64/.pub-cache dart pub global activate flutter_distributor
+      run: pub_cache=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64/.pub-cache dart pub global activate flutter_distributor
 
     - name: debugging path and flutter_distributor
       run: |
@@ -427,7 +427,7 @@ jobs:
 
     - name: build rpm package
       # working-directory: app  # komentarisano jer 'app' možda nije ispravan
-      run: flutter_root=/opt/hostedtoolcache/flutter/stable-${{ env.flutter_version }}-x64 flutter_distributor package --platform linux --targets rpm
+      run: flutter_root=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
 
     - name: find rpm file
       id: find_rpm

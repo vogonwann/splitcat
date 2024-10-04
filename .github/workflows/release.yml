@@ -172,7 +172,7 @@ jobs:
         id: find_targz
         run: |
           VERSION=${{ needs.build.outputs.version }}
-          TARGZ_PATH=$(find . -name "*.tar.gz")
+          TARGZ_PATH=$(find ./ -name "*.tar.gz")
           echo "targz_path=$TARGZ_PATH" >> $GITHUB_OUTPUT
 
       - name: Echo targz path

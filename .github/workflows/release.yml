@@ -365,7 +365,9 @@ jobs:
     - name: Create empty settings.json
       working-directory: ./
       run: |
-            mkdir -p D:\a\splitcat\splitcat\build\windows\runner\Release
+            if (-Not (Test-Path -Path D:\a\splitcat\splitcat\build\windows\runner\Release)) {
+                New-Item -ItemType Directory -Path D:\a\splitcat\splitcat\build\windows\runner\Release
+            }
             echo {} > D:\a\splitcat\splitcat\build\windows\runner\Release\settings.json
 
     - name: List DLL files
@@ -394,6 +396,7 @@ jobs:
         asset_path: app/LocalSend.zip
         asset_name: windows-zip-x86-64-result
         asset_content_type: application/zip
+
   build_rpm_x86_64:
     needs: [build, create_release]
     runs-on: ubuntu-latest

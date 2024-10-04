@@ -180,7 +180,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-          asset_path: ${{ steps.find_targz.outputs.targz_path }}
+          asset_path: ./*.tar.gz
           asset_name: splitcat-linux-x64.tar.gz
           asset_content_type: application/gzip
   # Manage the Flutter version on the self-hosted runner manually!

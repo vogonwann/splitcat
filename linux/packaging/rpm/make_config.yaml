@@ -5,7 +5,7 @@ url: https://janjic.lol
 buildArch: x86_64
 license: MIT
 
-icon: assets/icons/256x256/icon.png
+icon: linux/flutter/assets/icons/256x256/icon.png
 
 requires:
   - libappindicator

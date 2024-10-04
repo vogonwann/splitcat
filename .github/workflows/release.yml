@@ -172,7 +172,7 @@ jobs:
         id: find_targz
         run: |
           VERSION=${{ needs.build.outputs.version }}
-          TARGZ_PATH=$(find dist -name "splitcat-$VERSION*-linux.tar.gz")
+          TARGZ_PATH=$(find . -name "splitcat-$VERSION*-linux.tar.gz")
           echo "targz_path=$TARGZ_PATH" >> $GITHUB_OUTPUT
 
       # Dodaj korak za upload tar.gz fajla na release

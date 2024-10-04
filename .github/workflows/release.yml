@@ -320,6 +320,8 @@ jobs:
 
       - name: Upload AppImage to release
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
           asset_path: ${{ steps.find_appimage.outputs.appimage_path }}  
@@ -381,6 +383,8 @@ jobs:
 
     - name: Upload ZIP file
       uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
         asset_path: ${{ steps.zip_file.outputs.zip_path }}  # Putanja do generisanog ZIP fajla

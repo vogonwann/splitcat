@@ -373,23 +373,18 @@ jobs:
             Copy-Item scripts/windows/x64/vcruntime140_1.dll D:\a\splitcat\splitcat\build\windows\runner\Release\
 
     - name: Zip compiled files
-      working-directory: ./
-      id: zip_file
-      run: | 
-          zipPath = "Splitcat.zip"
-          Compress-Archive -Path build/windows/runner/Release/* -DestinationPath $zipPath
-          echo "zip_path=$ZIP_PATH" >> $GITHUB_OUTPUT
-          echo "zip_name=$(basename $ZIP_NAME)" >> $GITHUB_OUTPUT
+      working-directory: app
+      run: Compress-Archive -Path build/windows/runner/Release/* -DestinationPath LocalSend.zip
 
     - name: Upload ZIP file
       uses: actions/upload-release-asset@v1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-        asset_path: ${{ steps.zip_file.outputs.zip_path }}  # Putanja do generisanog ZIP fajla
-        asset_name: ${{ steps.zip_file.outputs.zip_name }}  # Ime ZIP fajla
-        asset_content_type: application/zip  # MIME tip za ZIP
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: app/LocalSend.zip
+        asset_name: windows-zip-x86-64-result
+        asset_content_type: application/zip
 
   build_rpm_x86_64:
     needs: [build, create_release]

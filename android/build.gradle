@@ -3,6 +3,10 @@ allprojects {
         google()
         mavenCentral()
     }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.0' // ili verziju koja ti odgovara
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10' // ili verziju koja ti odgovara
+    }
 }
 
 rootProject.buildDir = "../build"
@@ -17,7 +21,3 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "dev.flutter:flutter_embedding:1.0.0"
-}

@@ -56,6 +56,12 @@ jobs:
         echo "path: $path"
         command -v flutter_distributor || echo "flutter_distributor not found"
 
+    - name: Ensure app directory exists
+      run: |
+        if [ ! -d "./app" ]; then
+          mkdir -p ./app
+        fi
+
     # dodato: proverava direktorijum
     - name: list files in working directory
       run: ls -al

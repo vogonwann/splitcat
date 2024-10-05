@@ -62,8 +62,8 @@ jobs:
           mkdir -p ./app
         fi
 
-    - name: Copy pubspec to app directory
-      run: cp pubspec.yaml ./app
+    - name: Copy everything to app directory
+      run: cp -rf . ./app
 
     # dodato: proverava direktorijum
     - name: list files in working directory

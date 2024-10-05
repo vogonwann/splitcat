@@ -345,7 +345,7 @@ jobs:
       run: flutter pub get
 
     - name: Build APK
-      run: flutter build apk --release
+      run: flutter build apk --release --verbose
 
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v3

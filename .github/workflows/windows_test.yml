@@ -5,7 +5,6 @@ on:
 
 jobs:
   build_windows_zip_x86_64:
-    needs: [build, create_release]
 
     runs-on: windows-latest
     

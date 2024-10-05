@@ -22,7 +22,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   build_rpm_x86_64:
-    needs: [build, create_release]
+    needs: [build]
     runs-on: ubuntu-latest
     container: fedora:38
     steps:

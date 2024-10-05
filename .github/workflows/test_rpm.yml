@@ -67,7 +67,7 @@ jobs:
       run: ls -al
 
     - name: build rpm package
-      working-directory: app  # komentarisano jer 'app' možda nije ispravan
+    #working-directory: app  # komentarisano jer 'app' možda nije ispravan
       run: flutter_root=/opt/hostedtoolcache/flutter/stable-${{ env.FLUTTER_VERSION }}-x64 flutter_distributor package --platform linux --targets rpm
 
     - name: find rpm file

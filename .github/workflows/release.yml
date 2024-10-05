@@ -342,8 +342,9 @@ jobs:
         flutter-version: '3.13.9' # Specify your Flutter version
 
     - name: Install dependencies
-      run: flutter pub get
-
+      run: |
+        flutter pub get
+        flutter clean
     - name: Build APK
       run: flutter build apk --release --verbose
 

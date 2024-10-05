@@ -4,8 +4,8 @@ allprojects {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.0' // ili verziju koja ti odgovara
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10' // ili verziju koja ti odgovara
+        classpath 'com.android.tools.build:gradle:7.2.0' // ili verziju koja ti odgovara
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21' // ili verziju koja ti odgovara
     }
 }
 

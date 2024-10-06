@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:splitcat/util/catppuccin.dart';
@@ -107,7 +108,15 @@ class _MergeScreenState extends State<MergeScreen> {
       }
     }
   }
-
+  static Future<PlatformFile> convertXFile(XFile file) async {
+    return PlatformFile(
+      name: file.name,
+      size: await file.length(),
+      path: file.path,
+      bytes: await file.readAsBytes(),
+      readStream: file.readAsBytes().asStream().map((i) => i)
+    );
+  }
   void showCompletionDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -158,20 +167,23 @@ class _MergeScreenState extends State<MergeScreen> {
                     horizontal: 40, vertical: 20), // Veće dugme
               ),
               onPressed: () async {
-                FilePickerResult? result;
-                if (Platform.isLinux) {
-                  result =
+                if (Platform.isAndroid || Platform.isIOS) {
+                  var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
+                    setState(() {
+                      selectedFileName =
+                          result?.files.first.name.split('.').removeAt(0);
+                      selectedFileIcon = Icons.insert_drive_file;
+                      selectedFiles = result?.files;
+                    });
                 } else {
-                  result =
-                      await FilePicker.platform.pickFiles(allowMultiple: true);
-                }
-                if (result != null) {
-                  setState(() {
+                  var result = await openFiles();
+                  setState(() async {
                     selectedFileName =
-                        result?.files.first.name.split('.').removeAt(0);
-                    selectedFileIcon = Icons.insert_drive_file; // Primer ikone
-                    selectedFiles = result?.files;
+                        result.first.name.split('.').removeAt(0);
+                    selectedFileIcon = Icons.insert_drive_file;
+                    selectedFiles = await Future.wait<PlatformFile>(
+                        result.map((file) async => await convertXFile(file)));
                   });
                 }
               },

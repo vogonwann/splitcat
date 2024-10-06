@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:splitcat/util/logger.dart';
+import 'package:file_selector/file_selector.dart' as file_selector;
 
 class CustomSplitScreen extends StatefulWidget {
   const CustomSplitScreen({super.key});
@@ -96,13 +97,25 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                   horizontal: 40, vertical: 20), // Veće dugme
             ),
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles();
-              if (result != null) {
-                setState(() {
-                  selectedFilePath = result.files.single.path;
-                  selectedFileName = result.files.single.name;
-                  selectedFileIcon = Icons.insert_drive_file; // Primer ikone
-                });
+              if (Platform.isAndroid || Platform.isIOS) {
+                FilePickerResult? result = await FilePicker.platform
+                    .pickFiles();
+                if (result != null) {
+                  setState(() {
+                    selectedFilePath = result.files.single.path;
+                    selectedFileName = result.files.single.name;
+                    selectedFileIcon = Icons.insert_drive_file; // Primer ikone
+                  });
+                }
+              } else {
+                var result = await file_selector.openFile();
+                if (result != null) {
+                  setState(() {
+                    selectedFilePath = result.path;
+                    selectedFileName = result.name;
+                    selectedFileIcon = Icons.insert_drive_file;
+                  });
+                }
               }
             },
             child: const Text('Browse File'),

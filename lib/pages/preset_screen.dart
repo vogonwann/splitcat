@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:splitcat/util/logger.dart';
@@ -90,8 +91,8 @@ class _PresetScreenState extends State<PresetScreen> {
     );
   }
 
-  IconData getIconForFileType(String filePath) {
-    String extension = filePath.split('.').last.toLowerCase();
+  IconData getIconForFileType(String? filePath) {
+    String extension = filePath!.split('.').last.toLowerCase();
 
     switch (extension) {
       case 'pdf':
@@ -161,18 +162,27 @@ class _PresetScreenState extends State<PresetScreen> {
                       style: TextStyle(color: catppuccinText.withOpacity(0.7)),
                     ),
                     onTap: () async {
+                      if (Platform.isAndroid || Platform.isIOS) {
                       FilePickerResult? result =
                           await FilePicker.platform.pickFiles();
-                      if (result != null) {
+                        if (result != null) {
+                          setState(() {
+                            selectedApplicationName = appLimits[index]['App'];
+                            selectedFilePath = result.files.single.path;
+                            selectedFileName = result.files.single.name;
+                            selectedFileIcon =
+                                getIconForFileType(result.files.single.path!);
+                          });
+                        }
+                      } else {
+                        var result = await openFile();
                         setState(() {
                           selectedApplicationName = appLimits[index]['App'];
-                          selectedFilePath = result.files.single.path;
-                          selectedFileName = result.files.single.name;
+                          selectedFilePath = result?.path;
+                          selectedFileName = result?.name;
                           selectedFileIcon =
-                              getIconForFileType(result.files.single.path!);
+                              getIconForFileType(result?.path);
                         });
-                        logger.i("Odabran fajl: $selectedFileName");
-                        logger.i("Odabran fajl: $selectedFilePath");
                       }
                     },
                   ),

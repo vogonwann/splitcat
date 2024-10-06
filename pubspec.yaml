@@ -15,7 +15,7 @@ dependencies:
   gtk: "2.1.0"
   logger: ^2.4.0
   window_manager: ^0.4.2
-
+  xdg_directories: 1.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -328,39 +328,39 @@ jobs:
           asset_name: ${{ steps.find_appimage.outputs.appimage_name }}
           asset_content_type: application/octet-stream  # MIME tip za AppImage
 
-  build-apk:
-    name: Build APK
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.13.9' # Specify your Flutter version
-
-    - name: Install dependencies
-      run: |
-        flutter pub get
-        flutter clean
-    - name: Build APK
-      run: flutter build apk --release --verbose
-
-    - name: Upload APK as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: splitcat-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
-
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: build/app/outputs/flutter-apk/app-release.apk
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  build-apk:
+#    name: Build APK
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - name: Checkout repository
+#      uses: actions/checkout@v3
+#
+#    - name: Set up Flutter
+#      uses: subosito/flutter-action@v2
+#      with:
+#        flutter-version: '3.13.9' # Specify your Flutter version
+#
+#    - name: Install dependencies
+#      run: |
+#        flutter pub get
+#        flutter clean
+#    - name: Build APK
+#      run: flutter build apk --release --verbose
+#
+#    - name: Upload APK as artifact
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: splitcat-apk
+#        path: build/app/outputs/flutter-apk/app-release.apk
+#
+#    - name: Checkout repository
+#      uses: actions/checkout@v3
+#
+#    - name: Create Release
+#      uses: softprops/action-gh-release@v1
+#      with:
+#        files: build/app/outputs/flutter-apk/app-release.apk
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

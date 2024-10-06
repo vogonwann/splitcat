@@ -46,3 +46,4 @@ dist/0.1.0/splitcat-0.1.0+0.1.0-linux.deb
 log.txt
 repo
 .flatpak-builder
+splitcat.flatpak

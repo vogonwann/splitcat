@@ -4,7 +4,7 @@ Simple linux tool to split and merge files.
 
 ## Getting Started
 
-Head over to [releases]() and grab the version according to your distro.
+Head over to [releases](https://github.com/vogonwann/splitcat/releases) and grab the version according to your distro.
 
 Works on:
 - Desktops ️ 🖥️

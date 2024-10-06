@@ -4,8 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
+  gtk
   screen_retriever
   window_manager
+  yaru_window_linux
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

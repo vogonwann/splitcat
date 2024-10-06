@@ -1,16 +1,14 @@
-# splitcat
+# Splitcat
 
-A new Flutter project.
+Simple linux tool to split and merge files.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Head over to [releases]() and grab the version according to your distro.
 
-A few resources to get you started if this is your first Flutter project:
+Works on:
+- Desktops 💻️
+- Laptops 🖥️
+- Linux Phones 📱
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Android 🤖 and Windows 🪟 versions are coming soon.

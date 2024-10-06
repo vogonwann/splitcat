@@ -43,3 +43,5 @@ app.*.map.json
 /android/app/release
 dist/0.1.0/splitcat-0.1.0+0.1.0-linux.deb
 .vscode/settings.json
+log.txt
+repo

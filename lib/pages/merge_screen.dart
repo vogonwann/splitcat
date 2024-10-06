@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:splitcat/util/catppuccin.dart';
 
 import '../util/logger.dart';
+import '../util/split_merge.dart';
 
 class MergeScreen extends StatefulWidget {
   const MergeScreen({super.key});
@@ -21,102 +22,7 @@ class _MergeScreenState extends State<MergeScreen> {
   bool isMerging = false;
   List<PlatformFile>? selectedFiles = List.empty();
 
-  void mergeFiles(List<String> filePaths) async {
-    if (filePaths.length > 1) {
-      setState(() {
-        isMerging = true;
-      });
 
-      logger.log(Level.info, "Merging files: ${filePaths.join(', ')}");
-
-      // Сортирај путање до фајлова
-      filePaths.sort();
-
-      // Генериши име за резултујући фајл
-      var splitedFileName = filePaths.first.split('.');
-      var mergedFile = File(
-          "${splitedFileName[0]}.${splitedFileName[splitedFileName.length == 2 ? 1 : splitedFileName.length - 2]}");
-
-      // Креирај стрим за упис у фајл
-      var output = mergedFile.openWrite();
-
-      try {
-        for (var filePath in filePaths) {
-          // Читај фајлове у деловима и одмах уписуј у резултујући фајл
-          var input = File(filePath).openRead();
-          await output.addStream(input);
-        }
-      } catch (e) {
-        logger.log(Level.error, "Error merging files: $e");
-      } finally {
-        await output.close();
-        setState(() {
-          isMerging = false;
-        });
-      }
-    } else {
-      // If only first file is selected
-      final firstFileExtension =
-          filePaths[0].split('.')[filePaths[0].split('.').length - 1];
-      if (firstFileExtension == 'part01') {
-        var file = File(filePaths[0]);
-        final dir = file.parent;
-        final splitedPath = file.path.split('/');
-        final fileNameWithExtension = splitedPath[splitedPath.length - 1];
-        final prefix = fileNameWithExtension.split('.')[0];
-
-        if (!dir.existsSync()) {
-          logger.e('Directory does not exist');
-          return;
-        }
-
-        var splitedFileName = filePaths.first.split('.');
-        var mergedFile = File(
-            "${splitedFileName[0]}.${splitedFileName[splitedFileName.length == 2 ? 1 : splitedFileName.length - 2]}");
-
-        // Креирај стрим за упис у фајл
-        var output = mergedFile.openWrite();
-
-        // Листај све фајлове у директоријуму и филтрирај оне који почињу са `prefix`
-        final files = dir.listSync().where((entity) {
-          return entity is File &&
-              entity.path.split('/').last.startsWith(prefix);
-        });
-        try {
-          for (var file in files) {
-            // Читај фајлове у деловима и одмах уписуј у резултујући фајл
-            var input = File(file.path).openRead();
-            await output.addStream(input);
-          }
-
-          showCompletionDialog(
-              context, "File $selectedFileName merged successfully.");
-        } catch (e) {
-          logger.log(Level.error, "Error merging files: $e");
-          showCompletionDialog(
-              context, "File $selectedFileName merging failed.");
-        } finally {
-          await output.close();
-          setState(() {
-            isMerging = false;
-          });
-        }
-      } else {
-        logger.log(Level.error, "Wrong file selected: $filePaths[0]");
-        showCompletionDialog(context, "File $selectedFileName merging failed.");
-        throw Exception("Please select first or all files.");
-      }
-    }
-  }
-  static Future<PlatformFile> convertXFile(XFile file) async {
-    return PlatformFile(
-      name: file.name,
-      size: await file.length(),
-      path: file.path,
-      bytes: await file.readAsBytes(),
-      readStream: file.readAsBytes().asStream().map((i) => i)
-    );
-  }
   void showCompletionDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -178,12 +84,13 @@ class _MergeScreenState extends State<MergeScreen> {
                     });
                 } else {
                   var result = await openFiles();
-                  setState(() async {
+                  var files =  await Future.wait<PlatformFile>(
+                      result.map((file) async => await convertXFile(file)));
+                  setState(() {
                     selectedFileName =
                         result.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
-                    selectedFiles = await Future.wait<PlatformFile>(
-                        result.map((file) async => await convertXFile(file)));
+                    selectedFiles = files;
                   });
                 }
               },
@@ -207,7 +114,14 @@ class _MergeScreenState extends State<MergeScreen> {
                   ? () {
                     if (selectedFiles != null) {
                       mergeFiles(
-                          selectedFiles!.map((file) => file.path!).toList());
+                          selectedFiles!.map((file) => file.path!).toList(),
+                          context,
+                          selectedFileName,
+                          ((merging) {
+                            setState(() {
+                              isMerging = merging;
+                            });
+                          }));
                     }
                   }
                   : null, // Disabled ako fajl nije odabran

@@ -6,6 +6,8 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:splitcat/util/logger.dart';
+
+import '../util/split_merge.dart';
 class PresetScreen extends StatefulWidget {
   const PresetScreen({super.key});
 
@@ -29,47 +31,6 @@ class _PresetScreenState extends State<PresetScreen> {
     {'App': 'Teams', 'Limit': 250, 'Icon': Icons.group}, // 250MB
     {'App': 'Mail', 'Limit': 25, 'Icon': Icons.mail}, // 250MB
   ];
-
-  void splitFile(String filePath, int chunkSize) async {
-    if (chunkSize <= 0) {
-      logger.e("Chunk size mora biti veći od 0.");
-      return;
-    }
-
-    setState(() {
-      isSplitting = true;
-      isFinished = false;
-    });
-
-    int chunkSizeInBytes = chunkSize * 1024 * 1024;
-    var file = File(filePath);
-    var bytes = await file.readAsBytes();
-    var length = bytes.length;
-    var nrOfChunks = (length / chunkSizeInBytes).ceil();
-
-    for (var i = 0; i < nrOfChunks; i++) {
-      int start = i * chunkSizeInBytes;
-      int end = (start + chunkSizeInBytes < length)
-          ? start + chunkSizeInBytes
-          : length;
-      Uint8List chunkBytes = bytes.sublist(start, end);
-      String chunkFileName =
-          '$filePath.part${(i + 1) < 10 ? "0${i + 1}" : i + 1}';
-      var chunkFile = File(chunkFileName);
-      await chunkFile.writeAsBytes(chunkBytes);
-      logger.i("Sačuvan chunk $chunkFileName");
-    }
-
-    logger.i("Fajl je uspešno podeljen u $nrOfChunks chunk-ova.");
-
-    setState(() {
-      isSplitting = false; // Postavi na false kada završi
-      isFinished = true;
-    });
-
-    showCompletionDialog(
-        context, "File $selectedFileName splited successfully.");
-  }
 
   void showCompletionDialog(BuildContext context, String message) {
     showDialog(
@@ -130,20 +91,11 @@ class _PresetScreenState extends State<PresetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return
+      Stack(
+    children: [
+      Column(
       children: [
-        if (isSplitting) ...[
-          const SimpleDialog(
-            elevation: 0.0,
-            backgroundColor:
-                catppuccinBackground, // can change this to your prefered color
-            children: <Widget>[
-              Center(
-                child: CircularProgressIndicator(),
-              )
-            ],
-          ), // Prikaz indikatora
-        ] else
           Expanded(
             child: ListView.builder(
               itemCount: appLimits.length,
@@ -212,7 +164,17 @@ class _PresetScreenState extends State<PresetScreen> {
 
                     if (matchedApp['Limit'] > 0) {
                       int limit = matchedApp['Limit'];
-                      splitFile(selectedFilePath!, limit);
+                      splitFile(
+                          selectedFilePath!,
+                          limit,
+                          context,
+                          selectedFileName!,
+                          ((splitting) {
+                            setState(() {
+                              isSplitting = splitting;
+                            });
+                          })
+                      );
                       logger.i(
                           "Pokrenut split fajla: $selectedFileName sa limitom $limit MB");
                     } else {
@@ -239,6 +201,14 @@ class _PresetScreenState extends State<PresetScreen> {
                 ])
         ],
       ],
-    );
+    ),
+    if (isSplitting)
+      Container(
+        color: Colors.white54,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    ]);
   }
 }

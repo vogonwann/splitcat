@@ -96,19 +96,19 @@ add_custom_target(flutter_assemble DEPENDS
   ${FLUTTER_LIBRARY_HEADERS}
 )
 
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/16x16/icon.png DESTINATION share/icons/hicolor/16x16/apps)
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/32x32/icon.png DESTINATION share/icons/hicolor/32x32/apps)
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/48x48/icon.png DESTINATION share/icons/hicolor/48x48/apps)
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/64x64/icon.png DESTINATION share/icons/hicolor/64x64/apps)
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/128x128/icon.png DESTINATION share/icons/hicolor/128x128/apps)
-# install(FILES 
+# install(FILES
 #   ${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/256x256/icon.png DESTINATION share/icons/hicolor/256x256/apps)
-# install(FILES 
+# install(FILES
 #   ${PROJECT_DIR}/linux/packaging/deb/make-config.yaml DESTINATION linux/packaging/deb)
-# install(FILES 
+# install(FILES
 #   ${PROJECT_DIR}/linux/packaging/rpm/make_config.yaml DESTINATION linux/packaging/rpm)

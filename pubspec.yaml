@@ -14,7 +14,6 @@ dependencies:
   file_selector: "1.0.3"
   logger: ^2.4.0
   window_manager: ^0.4.2
-  yaru: "5.2.1"
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-import 'package:splitcat/util/logger.dart';
 import 'package:file_selector/file_selector.dart' as file_selector;
 
 import '../util/split_merge.dart';

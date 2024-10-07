@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:splitcat/util/catppuccin.dart';
 
-import '../util/logger.dart';
 import '../util/split_merge.dart';
 
 class MergeScreen extends StatefulWidget {

@@ -24,8 +24,8 @@ modules:
       - "./build-flatpak.sh"
     sources:
       - type: file
-        url: https://github.com/vogonwann/splitcat/releases/download/v0.1.2/splitcat-linux-x64.tar.gz
-        sha256: bc9d9ab92675d3d0e40ece5ad1e1c00174ee18970f3ac2a4478aa61602eecef7
+        url: https://github.com/vogonwann/splitcat/releases/download/v0.1.3/splitcat-linux-x64.tar.gz
+        sha256: a17167e267d7b5f81bc129dfe6ed14a911ced54b4ffa396352b98cfbcde23ff3
       - type: dir
         path: ../splitcat
       # - type: git

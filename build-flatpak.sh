@@ -52,16 +52,17 @@ mkdir -p /app/bin
 ln -s /app/$projectName/$executableName /app/bin/$executableName
 
 # Install the icon.
-iconDir=/app/share/icons/hicolor/scalable/apps
+iconDir=/app/share/icons/hicolor/256x256/apps
 mkdir -p $iconDir
-cp -r splitcat.svg $iconDir/splitcat.svg
+cp -r linux/flutter/assets/icons/256x256/icon.png $iconDir/$projectId.png
 
 # Install the desktop file.
 desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
-cp -r $projectName.desktop $desktopFileDir/
+cp -r $projectId.desktop $desktopFileDir/
 
-# Install the AppStream metadata file.
-# metadataDir=/app/share/metainfo
-# mkdir -p $metadataDir
-# cp -r packaging/linux/$projectId.metainfo.xml $metadataDir/
+
+# Install the appdata file.
+metadataDir=/app/share/appdata
+mkdir -p $metadataDir
+cp -r $projectId.appdata.xml $metadataDir/

@@ -59,10 +59,10 @@ cp -r linux/flutter/assets/icons/256x256/icon.png $iconDir/$projectId.png
 # Install the desktop file.
 desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
-cp -r $projectId.desktop $desktopFileDir/
+cp -r packaging/linux/$projectId.desktop $desktopFileDir/
 
 
 # Install the appdata file.
-metadataDir=/app/share/appdata
+metadataDir=/app/share/metainfo
 mkdir -p $metadataDir
-cp -r $projectId.appdata.xml $metadataDir/
+cp -r packaging/linux/$projectId.appdata.xml $metadataDir/

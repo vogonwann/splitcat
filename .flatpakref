@@ -1,0 +1,8 @@
+[Flatpak Ref]
+Name=lol.janjic.Splitcat
+Branch=main
+Title=lol.janjic.Splitcat from flathub
+Url=https://dl.flathub.org/repo/
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
+IsRuntime=false
+GPGKey=mQINBFlD2sABEADsiUZUO...

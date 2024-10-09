@@ -3,7 +3,7 @@
 ---
 app-id: lol.janjic.Splitcat
 runtime: org.freedesktop.Platform
-runtime-version: "22.08"
+runtime-version: "24.08"
 sdk: org.freedesktop.Sdk
 command: splitcat
 separate-locales: false
@@ -15,21 +15,55 @@ finish-args:
   - --socket=pulseaudio
   - --share=network
 modules:
-  # FlutterApp
-  - name: FlutterApp
+  - name: Splitcat
     buildsystem: simple
     only-arches:
       - x86_64
     build-commands:
-      - "./build-flatpak.sh"
+      - |
+        # Exit if any command fails
+        set -e
+
+        # Echo all commands for debug purposes
+        set -x
+
+
+        # No spaces in project name.
+        projectName=splitcat
+        projectId=lol.janjic.Splitcat
+        executableName=splitcat
+
+        # ------------------------------- Build Flatpak ----------------------------- #
+
+        # Extract portable Flutter build.
+        mkdir -p $projectName
+        tar -xf $projectName-linux-x64.tar.gz -C $projectName
+
+        # Copy the portable app to the Flatpak-based location.
+        cp -r $projectName /app/
+        chmod +x /app/$projectName/$executableName
+        mkdir -p /app/bin
+        ln -s /app/$projectName/$executableName /app/bin/$executableName
+
+        # Install the icon.
+        iconDir=/app/share/icons/hicolor/256x256/apps
+        mkdir -p $iconDir
+        cp -r linux/flutter/assets/icons/256x256/icon.png $iconDir/$projectId.png
+
+        # Install the desktop file.
+        desktopFileDir=/app/share/applications
+        mkdir -p $desktopFileDir
+        cp -r packaging/linux/$projectId.desktop $desktopFileDir/
+
+
+        # Install the appdata file.
+        metadataDir=/app/share/metainfo
+        mkdir -p $metadataDir
+        cp -r packaging/linux/$projectId.appdata.xml $metadataDir/
     sources:
       - type: file
-        url: https://github.com/vogonwann/splitcat/releases/download/v0.1.3/splitcat-linux-x64.tar.gz
-        sha256: a17167e267d7b5f81bc129dfe6ed14a911ced54b4ffa396352b98cfbcde23ff3
+        url: https://github.com/vogonwann/splitcat/releases/download/v0.1.4/splitcat-linux-x64.tar.gz
+        sha256: 7d3a7f11c4244f038f670b2017848a9baa8c80cc5ddd4fa47cef3da7336a1232
       - type: dir
         path: ../splitcat
-      # - type: git
-      #   url: https://github.com/Merrit/flutter_flatpak_example.git
-      #   branch: main
-      - type: file
-        path: build-flatpak.sh
+

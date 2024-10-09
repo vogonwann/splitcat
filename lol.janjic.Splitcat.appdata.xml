@@ -2,9 +2,9 @@
 <component type="desktop-application">
     <id>lol.janjic.Splitcat</id>
 
-    <name>splitcat</name>
+    <name>Splitcat</name>
     <developer_name>Ivan Janjić</developer_name>
-    <summary>Splitcat application packaged as a Flatpak.</summary>
+    <summary>Simple application for splitting and merging files.</summary>
 
     <metadata_license>MIT</metadata_license>
     <project_license>MIT</project_license>
@@ -20,12 +20,20 @@
     </description>
 
     <launchable type="desktop-id">lol.janjic.Splitcat.desktop</launchable>
-    <!-- <screenshots>
+    <screenshots>
         <screenshot type="default">
-            <image>https://raw.githubusercontent.com/fyne-io/flatpak_demo/main/img/screenshot1.png</image>
-            <caption>Markdown preview</caption>
+            <image>https://raw.githubusercontent.com/vogonwann/splitcat/refs/heads/main/screenshots/preset.png</image>
+            <caption>Presets screen</caption>
         </screenshot>
-    </screenshots> -->
+        <screenshot>
+            <image>https://raw.githubusercontent.com/vogonwann/splitcat/refs/heads/main/screenshots/custom.png</image>
+            <caption>Custom size screen</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/vogonwann/splitcat/refs/heads/main/screenshots/merge.png</image>
+            <caption>Merge screen</caption>
+        </screenshot>
+    </screenshots>
 
     <!-- Override the kudos that aren't automatically added. See https://gitlab.gnome.org/GNOME/gnome-software/blob/main/doc/kudos.md.-->
     <!-- This is not required in any way but helps software centers better understand Fyne applications. If you don't use notifications, you should remove it from the list. -->
@@ -47,11 +55,8 @@
     </branding>
 
     <releases>
-        <release version="0.1.4" date="2024-10-07" type="stable">
-            <description>
-                <p>Better metadata and sandbox permissions</p>
-            </description>
-            <url type="details">https://github.com/vogonwann/splitcat/releases/tag/v0.1.3</url>
+        <release version="0.1.4" date="2024-10-09" type="stable">
+            <url type="details">https://github.com/vogonwann/splitcat/releases/tag/v0.1.4</url>
         </release>
     </releases>
 

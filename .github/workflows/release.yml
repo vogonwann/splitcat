@@ -150,11 +150,16 @@ jobs:
         working-directory: ./
         run: flutter build linux --release --verbose
 
+      - name: Copy flathub needed files
+        run: |
+          cp file_1.xml ./build/linux/x64/release/bundle/
+          cp file_2.desktop ./build/linux/x64/release/bundle/
+
       - name: List files even if the build fails
         if: always()
         run: |
           echo "Listing build directory contents:"
-          ls -R ./build/linux/x64/release/bundle/lib/ || echo "Directory does not exist!"
+          ls -R ./build/linux/x64/release/bundle/ || echo "Directory does not exist!"
       
       - name: Create tar.gz archive
         run: |

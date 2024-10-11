@@ -23,16 +23,19 @@ jobs:
     - name: Build Windows app
       run: flutter build windows
 
-    - name: List entire build directory
-      run: dir build/
+    - name: List build/windows directory
+      run: dir build/windows/
 
-    - name: Zip Windows build
+    - name: List build/windows/runner directory
+      run: dir build/windows/runner/
+
+    - name: Zip Windows build (try alternative path)
       run: |
-        $buildPath = "build/windows/runner/Release"
+        $buildPath = "build/windows/runner"
         if (Test-Path $buildPath) {
           Compress-Archive -Path $buildPath\* -DestinationPath build/splitcat-windows.zip
         } else {
-          Write-Error "Build directory not found!"
+          Write-Error "Windows build directory not found!"
         }
 
     - name: Upload artifact

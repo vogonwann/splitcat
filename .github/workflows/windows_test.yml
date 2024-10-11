@@ -26,12 +26,12 @@ jobs:
     - name: List build/windows directory
       run: dir build/windows/
 
-    - name: List build/windows/runner directory
-      run: dir build/windows/runner/
+    - name: List build/windows/x64 directory
+      run: dir build/windows/x64/
 
-    - name: Zip Windows build (try alternative path)
+    - name: Zip Windows build
       run: |
-        $buildPath = "build/windows/runner"
+        $buildPath = "build/windows/x64"
         if (Test-Path $buildPath) {
           Compress-Archive -Path $buildPath\* -DestinationPath build/splitcat-windows.zip
         } else {

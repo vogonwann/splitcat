@@ -23,8 +23,8 @@ jobs:
     - name: Build Windows app
       run: flutter build windows
 
-    - name: List build directory for debugging
-      run: dir build/windows/runner/
+    - name: List entire build directory
+      run: dir build/
 
     - name: Zip Windows build
       run: |
@@ -39,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: splitcat-windows-build
-        path: build/splitcat-windows.zip  
+        path: build/splitcat-windows.zip

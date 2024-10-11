@@ -23,13 +23,20 @@ jobs:
     - name: Build Windows app
       run: flutter build windows
 
+    - name: List build directory for debugging
+      run: dir build/windows/runner/
+
     - name: Zip Windows build
       run: |
-        cd build/windows/runner/Release
-        powershell -Command "Compress-Archive -Path * -DestinationPath ../../../../splitcat-windows.zip"
+        $buildPath = "build/windows/runner/Release"
+        if (Test-Path $buildPath) {
+          Compress-Archive -Path $buildPath\* -DestinationPath build/splitcat-windows.zip
+        } else {
+          Write-Error "Build directory not found!"
+        }
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: splitcat-windows-build
-        path: build/splitcat-windows.zip   
+        path: build/splitcat-windows.zip  

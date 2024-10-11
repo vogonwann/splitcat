@@ -1,0 +1,30 @@
+name: Build Flutter APK for all architectures
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_apk:
+    name: Build APK for Android
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build APK for all architectures
+      run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
+
+    - name: Upload APKs
+      uses: actions/upload-artifact@v3
+      with:
+        name: splitcat-apk
+        path: build/app/outputs/flutter-apk/*.apk

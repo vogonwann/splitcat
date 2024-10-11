@@ -154,6 +154,8 @@ jobs:
         run: |
           cp lol.janjic.Splitcat.appdata.xml ./build/linux/x64/release/bundle/
           cp lol.janjic.Splitcat.desktop ./build/linux/x64/release/bundle/
+          cp icon.png ./build/linux/x64/release/bundle/lol.janjic.Splitcat.png
+
 
       - name: List files even if the build fails
         if: always()

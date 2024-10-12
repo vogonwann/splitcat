@@ -55,7 +55,7 @@ jobs:
 
       - name: Build APK
         working-directory: ${{ env.APK_BUILD_DIR }}
-        run: flutter build apk --split-per-abi
+        run: flutter build apk --release --split-per-abi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

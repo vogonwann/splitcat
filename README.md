@@ -1,6 +1,7 @@
 # Splitcat
+![github_logo](https://github.com/user-attachments/assets/0ba1a52c-a99d-4d9e-bd19-273a2da2cf5e)
 
-Simple linux tool to split and merge files.
+Simple _multi-platform_ tool to split and merge files.
 
 ## Getting Started
 

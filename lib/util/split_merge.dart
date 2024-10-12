@@ -79,14 +79,14 @@ void mergeFiles(List<String> filePaths, BuildContext context, String? selectedFi
         // Read files in chunks and immediately write to the resulting file
         var input = File(filePath).openRead();
         await output.addStream(input);
+      }
 
-        if (context.mounted) {
-          showCompletionDialog(
-              context,
-              "Merge Finished",
-              "File $selectedFileName merged successfully.",
-              null);
-        }
+      if (context.mounted) {
+        showCompletionDialog(
+            context,
+            "Merge Finished",
+            "File $mergedFile merged successfully.",
+            null);
       }
     } catch (e) {
       logger.log(Level.error, "Error merging files: $e");

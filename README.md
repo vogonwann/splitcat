@@ -8,11 +8,9 @@ Simple _multi-platform_ tool to split and merge files.
 Head over to [releases](https://github.com/vogonwann/splitcat/releases) and grab the version according to your distro.
 
 Works on:
-- Desktops ️ 🖥️
-- Laptops 💻️
-- Linux Phones 📱
-
-Android 🤖 and Windows 🪟 versions are coming soon.
+- 🖥️ Desktops & Laptops (🐧 & 🪟)
+- 📱 Linux Phones
+- 🤖 Android
 
 ## Splitcat in action:
 

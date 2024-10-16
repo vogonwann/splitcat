@@ -1,17 +1,16 @@
 # Splitcat
+![github_logo](https://github.com/user-attachments/assets/0ba1a52c-a99d-4d9e-bd19-273a2da2cf5e)
 
-Simple linux tool to split and merge files.
+Simple _multi-platform_ tool to split and merge files.
 
 ## Getting Started
 
 Head over to [releases](https://github.com/vogonwann/splitcat/releases) and grab the version according to your distro.
 
 Works on:
-- Desktops ️ 🖥️
-- Laptops 💻️
-- Linux Phones 📱
-
-Android 🤖 and Windows 🪟 versions are coming soon.
+- 🖥️ Desktops & Laptops (🐧 & 🪟)
+- 📱 Linux Phones
+- 🤖 Android
 
 ## Splitcat in action:
 

@@ -20,7 +20,6 @@ class _MergeScreenState extends State<MergeScreen> {
   bool isMerging = false;
   List<PlatformFile>? selectedFiles = List.empty();
 
-
   void showCompletionDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -54,8 +53,8 @@ class _MergeScreenState extends State<MergeScreen> {
             child: CircularProgressIndicator(),
           )
         ],
-      ) // Prikaz indikatora
-          );
+      )
+      );
     } else {
       return Center(
         child: Column(
@@ -74,19 +73,18 @@ class _MergeScreenState extends State<MergeScreen> {
                 if (Platform.isAndroid || Platform.isIOS) {
                   var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
-                    setState(() {
-                      selectedFileName =
-                          result?.files.first.name.split('.').removeAt(0);
-                      selectedFileIcon = Icons.insert_drive_file;
-                      selectedFiles = result?.files;
-                    });
-                } else {
-                  var result = await openFiles();
-                  var files =  await Future.wait<PlatformFile>(
-                      result.map((file) async => await convertXFile(file)));
                   setState(() {
                     selectedFileName =
-                        result.first.name.split('.').removeAt(0);
+                        result?.files.first.name.split('.').removeAt(0);
+                    selectedFileIcon = Icons.insert_drive_file;
+                    selectedFiles = result?.files;
+                  });
+                } else {
+                  var result = await openFiles();
+                  var files = await Future.wait<PlatformFile>(
+                      result.map((file) async => await convertXFile(file)));
+                  setState(() {
+                    selectedFileName = result.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = files;
                   });
@@ -110,18 +108,17 @@ class _MergeScreenState extends State<MergeScreen> {
               ),
               onPressed: selectedFileName != null
                   ? () {
-                    if (selectedFiles != null) {
-                      mergeFiles(
-                          selectedFiles!.map((file) => file.path!).toList(),
-                          context,
-                          selectedFileName,
-                          ((merging) {
-                            setState(() {
-                              isMerging = merging;
-                            });
-                          }));
+                      if (selectedFiles != null) {
+                        mergeFiles(
+                            selectedFiles!.map((file) => file.path!).toList(),
+                            context,
+                            selectedFileName, ((merging) {
+                          setState(() {
+                            isMerging = merging;
+                          });
+                        }));
+                      }
                     }
-                  }
                   : null, // Disabled ako fajl nije odabran
               child: const Text('Merge Files'),
             ),

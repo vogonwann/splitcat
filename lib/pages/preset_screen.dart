@@ -7,12 +7,14 @@ import 'package:splitcat/util/catppuccin.dart';
 import 'package:splitcat/util/logger.dart';
 
 import '../util/split_merge.dart';
+
 class PresetScreen extends StatefulWidget {
   const PresetScreen({super.key});
 
   @override
   _PresetScreenState createState() => _PresetScreenState();
 }
+
 class _PresetScreenState extends State<PresetScreen> {
   String? selectedFileName;
   String? selectedFilePath;
@@ -90,11 +92,9 @@ class _PresetScreenState extends State<PresetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      Stack(
-    children: [
+    return Stack(children: [
       Column(
-      children: [
+        children: [
           Expanded(
             child: ListView.builder(
               itemCount: appLimits.length,
@@ -114,8 +114,8 @@ class _PresetScreenState extends State<PresetScreen> {
                     ),
                     onTap: () async {
                       if (Platform.isAndroid || Platform.isIOS) {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles();
+                        FilePickerResult? result =
+                            await FilePicker.platform.pickFiles();
                         if (result != null) {
                           setState(() {
                             selectedApplicationName = appLimits[index]['App'];
@@ -131,8 +131,7 @@ class _PresetScreenState extends State<PresetScreen> {
                           selectedApplicationName = appLimits[index]['App'];
                           selectedFilePath = result?.path;
                           selectedFileName = result?.name;
-                          selectedFileIcon =
-                              getIconForFileType(result?.path);
+                          selectedFileIcon = getIconForFileType(result?.path);
                         });
                       }
                     },
@@ -141,73 +140,67 @@ class _PresetScreenState extends State<PresetScreen> {
               },
             ),
           ),
-        if (selectedFileName != null) ...[
-          if (!isSplitting) ...{
-            if (!isFinished)
-              ListTile(
-                leading: Icon(selectedFileIcon, color: catppuccinPrimary),
-                title: Text(
-                  selectedFileName!,
-                  style: const TextStyle(color: catppuccinText),
-                ),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    var matchedApp = appLimits.firstWhere(
-                      (element) =>
-                          selectedApplicationName!.contains(element['App']),
-                      orElse: () => {'App': '', 'Limit': 0},
-                    );
-
-                    logger.i("Odabran fajl: $selectedFileName");
-                    logger.i("Poklapanje: $matchedApp");
-
-                    if (matchedApp['Limit'] > 0) {
-                      int limit = matchedApp['Limit'];
-                      splitFile(
-                          selectedFilePath!,
-                          limit,
-                          context,
-                          selectedFileName!,
-                          ((splitting) {
-                            setState(() {
-                              isSplitting = splitting;
-                            });
-                          })
-                      );
-                      logger.i(
-                          "Pokrenut split fajla: $selectedFileName sa limitom $limit MB");
-                    } else {
-                      logger.e(
-                          "Nema poklapanja sa unapred definisanim aplikacijama.");
-                    }
-                  },
-                  child: const Text('Split'),
-                ),
-              )
-          } else
-            Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ListTile(
-                    leading: Icon(selectedFileIcon, color: catppuccinPrimary),
-                    title: Text(
-                      selectedFileName!,
-                      style: const TextStyle(color: catppuccinText),
-                    ),
+          if (selectedFileName != null) ...[
+            if (!isSplitting) ...{
+              if (!isFinished)
+                ListTile(
+                  leading: Icon(selectedFileIcon, color: catppuccinPrimary),
+                  title: Text(
+                    selectedFileName!,
+                    style: const TextStyle(color: catppuccinText),
                   ),
-                ])
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      var matchedApp = appLimits.firstWhere(
+                        (element) =>
+                            selectedApplicationName!.contains(element['App']),
+                        orElse: () => {'App': '', 'Limit': 0},
+                      );
+
+                      logger.i("File selected: $selectedFileName");
+                      logger.i("Match: $matchedApp");
+
+                      if (matchedApp['Limit'] > 0) {
+                        int limit = matchedApp['Limit'];
+                        splitFile(selectedFilePath!, limit, context,
+                            selectedFileName!, ((splitting) {
+                          setState(() {
+                            isSplitting = splitting;
+                          });
+                        }));
+                        logger.i(
+                            "File spliting started: $selectedFileName with limit of $limit MB");
+                      } else {
+                        logger.e("No match with predefined apps.");
+                      }
+                    },
+                    child: const Text('Split'),
+                  ),
+                )
+            } else
+              Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ListTile(
+                      leading: Icon(selectedFileIcon, color: catppuccinPrimary),
+                      title: Text(
+                        selectedFileName!,
+                        style: const TextStyle(color: catppuccinText),
+                      ),
+                    ),
+                  ])
+          ],
         ],
-      ],
-    ),
-    if (isSplitting)
-      Container(
-        color: Colors.white54,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
       ),
+      if (isSplitting)
+        Container(
+          color: Colors.white54,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
     ]);
   }
 }

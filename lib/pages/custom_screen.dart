@@ -26,7 +26,6 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
     // Dodavanje listenera za ažuriranje stanja kada se promeni veličina
     _sizeController.addListener(() {
       setState(() {
-        isSplitting = true;
       });
     });
   }
@@ -108,7 +107,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                         splitFile(selectedFilePath!, chunkSize, context,
                             selectedFileName!, ((splitting) {
                           setState(() {
-                            this.isSplitting = splitting;
+                            isSplitting = splitting;
                           });
                         }));
                       }

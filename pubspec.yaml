@@ -17,6 +17,12 @@ dependencies:
   window_manager: ^0.4.2
   xdg_directories: 1.0.4
   url_launcher: ^6.0.9
+  flutter_archive: ^6.0.3
+  archive: ^3.3.0
+  path_provider: ^2.0.14
+  share_plus: ^10.1.0
+  share_plus_dialog: ^2.0.1
+  path: ^1.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

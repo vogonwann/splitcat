@@ -127,12 +127,14 @@ class _PresetScreenState extends State<PresetScreen> {
                         }
                       } else {
                         var result = await openFile();
-                        setState(() {
-                          selectedApplicationName = appLimits[index]['App'];
-                          selectedFilePath = result?.path;
-                          selectedFileName = result?.name;
-                          selectedFileIcon = getIconForFileType(result?.path);
-                        });
+                        if (result != null) {
+                          setState(() {
+                            selectedApplicationName = appLimits[index]['App'];
+                            selectedFilePath = result.path;
+                            selectedFileName = result.name;
+                            selectedFileIcon = getIconForFileType(result.path);
+                          });
+                        }
                       }
                     },
                   ),

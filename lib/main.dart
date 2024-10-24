@@ -6,6 +6,8 @@ import 'package:splitcat/pages/preset_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:package_config/package_config.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 Future<String?> getCPUArchitecture() async {
   if (Platform.isWindows) {
@@ -29,37 +31,53 @@ void main() async {
 }
 
 void _showAboutDialog(BuildContext context) {
+  String version = '';
+  String buildNumber = '';
+  PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+    version = packageInfo.version;
+    buildNumber = packageInfo.buildNumber;
+  });
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         title: const Text('About Splitcat'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              _buildLinkRow(
-                icon: Icons.person,
-                text: 'Developed by Ivan Janjić',
-                url: '',
+        content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Version: $version",
+                style: TextStyle(fontSize: 12.0, color: Colors.grey.shade400),
               ),
-              _buildLinkRow(
-                icon: Icons.link,
-                text: 'GitHub: vogonwann',
-                url: 'https://github.com/vogonwann',
-              ),
-              _buildLinkRow(
-                icon: Icons.language,
-                text: 'Site: janjic.lol',
-                url: 'https://janjic.lol',
-              ),
-              _buildLinkRow(
-                icon: Icons.portrait,
-                text: 'Mastodon: wannoye',
-                url: 'https://mastodon.social/@wannoye',
-              ),
-            ],
-          ),
-        ),
+              SizedBox(height: 12,),
+              SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    _buildLinkRow(
+                      icon: Icons.person,
+                      text: 'Developed by Ivan Janjić',
+                      url: '',
+                    ),
+                    _buildLinkRow(
+                      icon: Icons.link,
+                      text: 'GitHub: vogonwann',
+                      url: 'https://github.com/vogonwann',
+                    ),
+                    _buildLinkRow(
+                      icon: Icons.language,
+                      text: 'Site: janjic.lol',
+                      url: 'https://janjic.lol',
+                    ),
+                    _buildLinkRow(
+                      icon: Icons.portrait,
+                      text: 'Mastodon: wannoye',
+                      url: 'https://mastodon.social/@wannoye',
+                    ),
+                  ],
+                ),
+              )
+            ]),
         actions: <Widget>[
           TextButton(
             child: const Text('Close'),
@@ -74,10 +92,11 @@ void _showAboutDialog(BuildContext context) {
 }
 
 // Funkcija za kreiranje reda sa ikonom i linkom
-Widget _buildLinkRow({required IconData icon, required String text, required String url}) {
+Widget _buildLinkRow(
+    {required IconData icon, required String text, required String url}) {
   return GestureDetector(
     child: InkWell(
-      onTap: ((){
+      onTap: (() {
         _launchURL(url);
       }),
       hoverColor: Colors.white10,
@@ -158,16 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         title: const Text('Splitcat'),
         backgroundColor: catppuccinSurface,
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: () => _showAboutDialog(context), // Dugme za About dijalog
+            onPressed: () =>
+                _showAboutDialog(context), // Dugme za About dijalog
           ),
         ],
-      ), 
+      ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -190,4 +210,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

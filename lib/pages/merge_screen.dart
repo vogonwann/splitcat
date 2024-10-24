@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:splitcat/util/catppuccin.dart';
 
 import '../util/split_merge.dart';
@@ -60,7 +61,7 @@ class _MergeScreenState extends State<MergeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Please select first or all files to merge."),
+            const Text("Please select files to merge."),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -74,8 +75,8 @@ class _MergeScreenState extends State<MergeScreen> {
                   var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
                   setState(() {
-                    selectedFileName =
-                        result?.files.first.name.split('.').removeAt(0);
+                    selectedFileName = _getFileNameWithoutExtension(result!.files.first.name);
+                        //result?.files.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = result?.files;
                   });
@@ -84,7 +85,7 @@ class _MergeScreenState extends State<MergeScreen> {
                   var files = await Future.wait<PlatformFile>(
                       result.map((file) async => await convertXFile(file)));
                   setState(() {
-                    selectedFileName = result.first.name.split('.').removeAt(0);
+                    selectedFileName = _getFileNameWithoutExtension(result.first.name);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = files;
                   });
@@ -127,4 +128,11 @@ class _MergeScreenState extends State<MergeScreen> {
       );
     }
   }
-}
+
+  String _getFileNameWithoutExtension(String name) {
+    String baseName = basename(name);
+    int lastDotIndex = baseName.lastIndexOf('.');
+
+    return lastDotIndex != -1 ? baseName.substring(0, lastDotIndex) : name;
+  }
+} 

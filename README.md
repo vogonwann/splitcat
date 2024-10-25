@@ -12,6 +12,7 @@ Works on:
 - 📱 Linux Phones
 - 🤖 Android
 
+[<img src="https://github.com/user-attachments/assets/6769ff43-7211-4969-9004-fde9184d0ee8">](https://flathub.org/apps/lol.janjic.Splitcat)
 ## Splitcat in action:
 
 ### Preset size screen

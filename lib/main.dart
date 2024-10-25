@@ -6,7 +6,6 @@ import 'package:splitcat/pages/preset_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:package_config/package_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 Future<String?> getCPUArchitecture() async {
@@ -32,10 +31,8 @@ void main() async {
 
 void _showAboutDialog(BuildContext context) {
   String version = '';
-  String buildNumber = '';
   PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     version = packageInfo.version;
-    buildNumber = packageInfo.buildNumber;
   });
   showDialog(
     context: context,

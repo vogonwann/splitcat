@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart' as file_selector;
+import 'package:splitcat/util/catppuccin.dart';
 
 import '../util/split_merge.dart';
 
@@ -18,6 +19,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
   String? selectedFilePath;
   IconData? selectedFileIcon;
   bool isSplitting = false;
+  bool zipBefore = false;
   final TextEditingController _sizeController = TextEditingController();
 
   @override
@@ -25,8 +27,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
     super.initState();
     // Dodavanje listenera za ažuriranje stanja kada se promeni veličina
     _sizeController.addListener(() {
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -93,6 +94,23 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                   keyboardType: TextInputType.number,
                 ),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Checkbox(
+                    value: zipBefore,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        zipBefore = value!;
+                      });
+                    },
+                  ),
+                  const Text('Zip before',
+                      style: TextStyle(color: catppuccinText)),
+                ],
+              ),
+              SizedBox(height: 12,),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
@@ -109,7 +127,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                           setState(() {
                             isSplitting = splitting;
                           });
-                        }));
+                        }), zipBefore: zipBefore);
                       }
                     : null,
                 // Disable ako fajl nije odabran ili chunk size nije unet

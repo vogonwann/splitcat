@@ -22,6 +22,8 @@ class _PresetScreenState extends State<PresetScreen> {
   IconData? selectedFileIcon;
   bool isSplitting = false;
   bool isFinished = false;
+  bool zipBefore = false;
+  bool encrypt = false;
 
   final List<Map<String, dynamic>> appLimits = [
     {'App': 'Telegram', 'Limit': 2048, 'Icon': Icons.message}, // 2GB
@@ -145,38 +147,95 @@ class _PresetScreenState extends State<PresetScreen> {
           if (selectedFileName != null) ...[
             if (!isSplitting) ...{
               if (!isFinished)
-                ListTile(
-                  leading: Icon(selectedFileIcon, color: catppuccinPrimary),
-                  title: Text(
-                    selectedFileName!,
-                    style: const TextStyle(color: catppuccinText),
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      var matchedApp = appLimits.firstWhere(
-                        (element) =>
-                            selectedApplicationName!.contains(element['App']),
-                        orElse: () => {'App': '', 'Limit': 0},
-                      );
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(selectedFileIcon, color: catppuccinPrimary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              selectedFileName!,
+                              style: const TextStyle(color: catppuccinText),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: zipBefore,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      zipBefore = value!;
+                                    });
+                                  },
+                                ),
+                                const Text('Zip before',
+                                    style: TextStyle(color: catppuccinText)),
+                              ],
+                            ),
+                            // Row(
+                            //   children: [
+                            //     Checkbox(
+                            //       value: encrypt,
+                            //       onChanged: (bool? value) {
+                            //         setState(() {
+                            //           encrypt = value!;
+                            //         });
+                            //       },
+                            //     ),
+                            //     const Text('Encrypt',
+                            //         style: TextStyle(color: catppuccinText)),
+                            //   ],
+                            // ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    var matchedApp = appLimits.firstWhere(
+                                      (element) => selectedApplicationName!
+                                          .contains(element['App']),
+                                      orElse: () => {'App': '', 'Limit': 0},
+                                    );
 
-                      logger.i("File selected: $selectedFileName");
-                      logger.i("Match: $matchedApp");
+                                    logger
+                                        .i("File selected: $selectedFileName");
+                                    logger.i("Match: $matchedApp");
 
-                      if (matchedApp['Limit'] > 0) {
-                        int limit = matchedApp['Limit'];
-                        splitFile(selectedFilePath!, limit, context,
-                            selectedFileName!, ((splitting) {
-                          setState(() {
-                            isSplitting = splitting;
-                          });
-                        }));
-                        logger.i(
-                            "File spliting started: $selectedFileName with limit of $limit MB");
-                      } else {
-                        logger.e("No match with predefined apps.");
-                      }
-                    },
-                    child: const Text('Split'),
+                                    if (matchedApp['Limit'] > 0) {
+                                      int limit = matchedApp['Limit'];
+                                      splitFile(
+                                        selectedFilePath!,
+                                        limit,
+                                        context,
+                                        selectedFileName!,
+                                        (splitting) {
+                                          setState(() {
+                                            isSplitting = splitting;
+                                          });
+                                        },
+                                        encryptBefore: encrypt,
+                                        zipBefore: zipBefore
+                                      );
+                                      logger.i(
+                                          "File splitting started: $selectedFileName with limit of $limit MB");
+                                    } else {
+                                      logger
+                                          .e("No match with predefined apps.");
+                                    }
+                                  },
+                                  child: const Text('Split'),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 )
             } else

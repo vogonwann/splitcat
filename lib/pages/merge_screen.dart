@@ -20,6 +20,7 @@ class _MergeScreenState extends State<MergeScreen> {
   IconData? selectedFileIcon;
   bool isMerging = false;
   List<PlatformFile>? selectedFiles = List.empty();
+  String currentMessage = '';
 
   void showCompletionDialog(BuildContext context, String message) {
     showDialog(
@@ -54,8 +55,7 @@ class _MergeScreenState extends State<MergeScreen> {
             child: CircularProgressIndicator(),
           )
         ],
-      )
-      );
+      ));
     } else {
       return Center(
         child: Column(
@@ -75,8 +75,9 @@ class _MergeScreenState extends State<MergeScreen> {
                   var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
                   setState(() {
-                    selectedFileName = _getFileNameWithoutExtension(result!.files.first.name);
-                        //result?.files.first.name.split('.').removeAt(0);
+                    selectedFileName =
+                        _getFileNameWithoutExtension(result!.files.first.name);
+                    //result?.files.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = result?.files;
                   });
@@ -85,7 +86,8 @@ class _MergeScreenState extends State<MergeScreen> {
                   var files = await Future.wait<PlatformFile>(
                       result.map((file) async => await convertXFile(file)));
                   setState(() {
-                    selectedFileName = _getFileNameWithoutExtension(result.first.name);
+                    selectedFileName =
+                        _getFileNameWithoutExtension(result.first.name);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = files;
                   });
@@ -117,6 +119,10 @@ class _MergeScreenState extends State<MergeScreen> {
                           setState(() {
                             isMerging = merging;
                           });
+                        }), ((message) {
+                          setState(() {
+                            currentMessage = message;
+                          });
                         }));
                       }
                     }
@@ -135,4 +141,4 @@ class _MergeScreenState extends State<MergeScreen> {
 
     return lastDotIndex != -1 ? baseName.substring(0, lastDotIndex) : name;
   }
-} 
+}

@@ -24,6 +24,7 @@ class _PresetScreenState extends State<PresetScreen> {
   bool isFinished = false;
   bool zipBefore = false;
   bool encrypt = false;
+  String currentMessage = '';
 
   final List<Map<String, dynamic>> appLimits = [
     {'App': 'Telegram', 'Limit': 2048, 'Icon': Icons.message}, // 2GB
@@ -209,18 +210,20 @@ class _PresetScreenState extends State<PresetScreen> {
                                     if (matchedApp['Limit'] > 0) {
                                       int limit = matchedApp['Limit'];
                                       splitFile(
-                                        selectedFilePath!,
-                                        limit,
-                                        context,
-                                        selectedFileName!,
-                                        (splitting) {
-                                          setState(() {
-                                            isSplitting = splitting;
-                                          });
-                                        },
-                                        encryptBefore: encrypt,
-                                        zipBefore: zipBefore
-                                      );
+                                          selectedFilePath!,
+                                          limit,
+                                          context,
+                                          selectedFileName!, (splitting) {
+                                        setState(() {
+                                          isSplitting = splitting;
+                                        });
+                                      }, (message) {
+                                        setState(() {
+                                          currentMessage = message;
+                                        });
+                                      },
+                                          encryptBefore: encrypt,
+                                          zipBefore: zipBefore);
                                       logger.i(
                                           "File splitting started: $selectedFileName with limit of $limit MB");
                                     } else {
@@ -259,7 +262,20 @@ class _PresetScreenState extends State<PresetScreen> {
         Container(
           color: Colors.white54,
           child: Center(
-            child: CircularProgressIndicator(),
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  currentMessage,
+                  style: const TextStyle(color: catppuccinText),
+                )
+              ],
+            ),
           ),
         ),
     ]);

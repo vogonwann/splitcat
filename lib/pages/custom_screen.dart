@@ -21,6 +21,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
   bool isSplitting = false;
   bool zipBefore = false;
   final TextEditingController _sizeController = TextEditingController();
+  String currentMessage = '';
 
   @override
   void initState() {
@@ -110,7 +111,9 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                       style: TextStyle(color: catppuccinText)),
                 ],
               ),
-              SizedBox(height: 12,),
+              SizedBox(
+                height: 12,
+              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
@@ -127,6 +130,10 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                           setState(() {
                             isSplitting = splitting;
                           });
+                        }), ((message) {
+                          setState(() {
+                            currentMessage = message;
+                          });
                         }), zipBefore: zipBefore);
                       }
                     : null,
@@ -140,7 +147,18 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
           Container(
             color: Colors.white54,
             child: Center(
-              child: CircularProgressIndicator(),
+              child: Column(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Text(
+                    currentMessage,
+                    style: const TextStyle(color: catppuccinText),
+                  )
+                ],
+              ),
             ),
           ),
       ],

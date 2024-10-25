@@ -49,7 +49,8 @@ Future<void> splitFile(
   int chunkSize,
   BuildContext context,
   String selectedFileName,
-  Function(bool) setIsSplitting, {
+  Function(bool) setIsSplitting,
+  Function(String) setCurrentMessage, {
   bool zipBefore = false,
   bool encryptBefore = false,
   String? password,
@@ -60,48 +61,50 @@ Future<void> splitFile(
   }
 
   setIsSplitting(true); // Start splitting process
+  setCurrentMessage("Starting to split file $selectedFileName");
   final chunkSizeInBytes = chunkSize * 1024 * 1024;
   // var file = io.File(filePath);
   io.File file = io.File(filePath);
 
   if (zipBefore) {
     logger.i("Creating archive $filePath.zip");
+    setCurrentMessage("Creating archive $filePath.zip");
     try {
       final file = File(filePath);
       final bytes = await file.readAsBytes();
-
+    
       final archive = Archive();
-      final archiveFile =
-          ArchiveFile("$filePath.zip", bytes.length, bytes);
+      final archiveFile = ArchiveFile(path.basename(filePath), bytes.length, bytes);
       archive.addFile(archiveFile);
       final archiveEncoded = ZipEncoder().encode(archive);
       if (archiveEncoded == null) return;
 
-      final zipFile =
-          await File("$filePath.zip").writeAsBytes(archiveEncoded);
-          
-      await _processAndSplitFile(
-          zipFile, chunkSizeInBytes, context, selectedFileName, setIsSplitting);
+      final zipFile = await File("$filePath.zip").writeAsBytes(archiveEncoded);
+
+      await _processAndSplitFile(zipFile, chunkSizeInBytes, context,
+          selectedFileName, setIsSplitting, setCurrentMessage, isZip: true);
 
       logger.i("Archive $filePath.zip created");
+      setCurrentMessage("Archive $filePath.zip created");
     } catch (e) {
       logger.e("$e");
     }
   } else {
     // Split the (possibly encrypted) file into chunks.
-    await _processAndSplitFile(
-        file, chunkSizeInBytes, context, selectedFileName, setIsSplitting);
+    await _processAndSplitFile(file, chunkSizeInBytes, context,
+        selectedFileName, setIsSplitting, setCurrentMessage);
   }
 }
 
 // Processes the given file and splits it into chunks.
 Future<void> _processAndSplitFile(
-  io.File file,
-  int chunkSizeInBytes,
-  BuildContext context,
-  String selectedFileName,
-  Function(bool) setIsSplitting,
-) async {
+    io.File file,
+    int chunkSizeInBytes,
+    BuildContext context,
+    String selectedFileName,
+    Function(bool) setIsSplitting,
+    Function(String) setCurrentMessage,
+    { bool isZip = false }) async {
   final bytes = await file.readAsBytes();
   final length = bytes.length;
   final nrOfChunks = (length / chunkSizeInBytes).ceil();
@@ -119,11 +122,16 @@ Future<void> _processAndSplitFile(
 
     await chunkFile.writeAsBytes(chunkBytes);
     logger.d("Chunk saved: $chunkFileName");
+    setCurrentMessage("Chunk saved: $chunkFileName");
 
     chunkFiles.add(chunkFile);
+    if (isZip) {
+      _deleteFile(file);
+    }
   }
 
   logger.log(Level.info, "File split into $nrOfChunks chunks.");
+  setCurrentMessage("File split into $nrOfChunks chunks.");
 
   if (context.mounted) {
     showCompletionDialog(
@@ -138,6 +146,18 @@ Future<void> _processAndSplitFile(
     _offerFileSharing(chunkFiles, context);
   }
   setIsSplitting(false);
+}
+
+Future<void> _deleteFile(io.File file) async {
+  try {
+    if (await file.exists()) {
+      await file.delete();
+    } else {
+      logger.log(Level.warning, "File doesn't exist: ${path.basename(file.path)}");
+    }
+  } catch(e) {
+    logger.log(Level.error, "$e");
+  }
 }
 
 // Funkcija koja zipuje folder
@@ -167,12 +187,17 @@ Future<String> getTempDirectory() async {
   return tempDir.path;
 }
 
-void mergeFiles(List<String> filePaths, BuildContext context,
-    String? selectedFileName, Function(bool) setIsMergingState) async {
+void mergeFiles(
+    List<String> filePaths,
+    BuildContext context,
+    String? selectedFileName,
+    Function(bool) setIsMergingState,
+    Function(String) setCurrentMessage) async {
   if (filePaths.length > 1) {
     setIsMergingState(true);
 
     logger.log(Level.info, "Merging files: ${filePaths.join(', ')}");
+    setCurrentMessage("Merging files: ${filePaths.join(', ')}");
 
     filePaths.sort();
 
@@ -188,6 +213,8 @@ void mergeFiles(List<String> filePaths, BuildContext context,
         // Read files in chunks and immediately write to the resulting file
         var input = io.File(filePath).openRead();
         await output.addStream(input);
+        logger.log(Level.info, "File $filePath merged");
+        setCurrentMessage("File $filePath merged");
       }
 
       if (context.mounted) {
@@ -195,6 +222,7 @@ void mergeFiles(List<String> filePaths, BuildContext context,
             "File $mergedFile merged successfully.", null);
       }
       logger.log(Level.info, "File $selectedFileName merged successfully");
+      setCurrentMessage("File $selectedFileName merged successfully");
     } catch (e) {
       logger.log(Level.error, "Error merging files: $e");
     } finally {

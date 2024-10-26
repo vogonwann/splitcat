@@ -83,7 +83,7 @@ class _MergeScreenState extends State<MergeScreen> {
                         _getFileNameWithoutExtension(result!.files.first.name);
                     //result?.files.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
-                    selectedFiles = result?.files;
+                    selectedFiles = result.files;
                     isMerging = false;
                   });
                 } else {

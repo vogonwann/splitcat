@@ -1,9 +1,7 @@
 import 'dart:io' as io;
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -14,8 +12,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:share_plus_dialog/share_plus_dialog.dart';
 import 'logger.dart';
 
-import 'package:archive/archive.dart';
-import 'package:flutter_archive/flutter_archive.dart' as farchive;
 
 import 'package:path/path.dart' as path;
 

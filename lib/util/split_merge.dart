@@ -76,7 +76,9 @@ Future<void> splitFile(
       final archive = Archive();
       final archiveFile = ArchiveFile(path.basename(filePath), bytes.length, bytes);
       archive.addFile(archiveFile);
-      final archiveEncoded = ZipEncoder().encode(archive);
+      final archiveEncoded = password == null || password.isEmpty 
+        ? ZipEncoder().encode(archive) 
+        : ZipEncoder(password: password).encode(archive);
       if (archiveEncoded == null) return;
 
       final zipFile = await File("$filePath.zip").writeAsBytes(archiveEncoded);

@@ -72,6 +72,10 @@ class _MergeScreenState extends State<MergeScreen> {
               ),
               onPressed: () async {
                 if (Platform.isAndroid || Platform.isIOS) {
+                  setState(() {
+                    isMerging = true;
+                    currentMessage = "Loading files to merge...";
+                  });
                   var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
                   setState(() {
@@ -80,6 +84,7 @@ class _MergeScreenState extends State<MergeScreen> {
                     //result?.files.first.name.split('.').removeAt(0);
                     selectedFileIcon = Icons.insert_drive_file;
                     selectedFiles = result?.files;
+                    isMerging = false;
                   });
                 } else {
                   var result = await openFiles();

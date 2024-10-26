@@ -55,8 +55,8 @@
     </branding>
 
     <releases>
-        <release version="0.1.11" date="2024-10-23" type="stable">
-            <url type="details">https://github.com/vogonwann/splitcat/releases/tag/v0.1.11</url>
+        <release version="0.1.13" date="2024-10-26" type="stable">
+            <url type="details">https://github.com/vogonwann/splitcat/releases/tag/v0.1.13</url>
         </release>
     </releases>
 

@@ -25,6 +25,7 @@ class _PresetScreenState extends State<PresetScreen> {
   bool zipBefore = false;
   bool encrypt = false;
   String currentMessage = '';
+  String? password; // Додато: Лозинка
 
   final List<Map<String, dynamic>> appLimits = [
     {'App': 'Telegram', 'Limit': 2048, 'Icon': Icons.message}, // 2GB
@@ -33,21 +34,62 @@ class _PresetScreenState extends State<PresetScreen> {
     {'App': 'Viber', 'Limit': 200, 'Icon': Icons.phone}, // 200MB
     {'App': 'Skype', 'Limit': 300, 'Icon': Icons.video_call}, // 300MB
     {'App': 'Teams', 'Limit': 250, 'Icon': Icons.group}, // 250MB
-    {'App': 'Mail', 'Limit': 25, 'Icon': Icons.mail}, // 250MB
+    {'App': 'Mail', 'Limit': 25, 'Icon': Icons.mail}, // 25MB
   ];
 
-  void showCompletionDialog(BuildContext context, String message) {
+  void showPasswordDialog() {
+    String enteredPassword = '';
+    String confirmPassword = '';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Split finished"),
-          content: Text(message),
+          title: const Text('Enter Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+                onChanged: (value) {
+                  enteredPassword = value;
+                },
+              ),
+              TextField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                onChanged: (value) {
+                  confirmPassword = value;
+                },
+              ),
+            ],
+          ),
           actions: [
             TextButton(
-              child: const Text("OK"),
+              child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Затвори дијалог
+                setState(() {
+                  password = confirmPassword;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                if (enteredPassword == confirmPassword) {
+                  setState(() {
+                    password = enteredPassword;
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Passwords do not match!'),
+                    ),
+                  );
+                }
               },
             ),
           ],
@@ -58,7 +100,6 @@ class _PresetScreenState extends State<PresetScreen> {
 
   IconData getIconForFileType(String? filePath) {
     String extension = filePath!.split('.').last.toLowerCase();
-
     switch (extension) {
       case 'pdf':
         return Icons.picture_as_pdf;
@@ -166,74 +207,61 @@ class _PresetScreenState extends State<PresetScreen> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Checkbox(
+                                Switch(
                                   value: zipBefore,
-                                  onChanged: (bool? value) {
+                                  onChanged: (bool value) {
                                     setState(() {
-                                      zipBefore = value!;
+                                      zipBefore = value;
                                     });
                                   },
                                 ),
                                 const Text('Zip before',
                                     style: TextStyle(color: catppuccinText)),
+                                const SizedBox(width: 16),
+                                ElevatedButton(
+                                  onPressed: showPasswordDialog,
+                                  child: const Text('Set Password'),
+                                ),
                               ],
                             ),
-                            // Row(
-                            //   children: [
-                            //     Checkbox(
-                            //       value: encrypt,
-                            //       onChanged: (bool? value) {
-                            //         setState(() {
-                            //           encrypt = value!;
-                            //         });
-                            //       },
-                            //     ),
-                            //     const Text('Encrypt',
-                            //         style: TextStyle(color: catppuccinText)),
-                            //   ],
-                            // ),
                             const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    var matchedApp = appLimits.firstWhere(
-                                      (element) => selectedApplicationName!
-                                          .contains(element['App']),
-                                      orElse: () => {'App': '', 'Limit': 0},
-                                    );
+                            ElevatedButton(
+                              onPressed: () {
+                                var matchedApp = appLimits.firstWhere(
+                                  (element) => selectedApplicationName!
+                                      .contains(element['App']),
+                                  orElse: () => {'App': '', 'Limit': 0},
+                                );
 
-                                    logger
-                                        .i("File selected: $selectedFileName");
-                                    logger.i("Match: $matchedApp");
+                                logger.i("File selected: $selectedFileName");
+                                logger.i("Match: $matchedApp");
 
-                                    if (matchedApp['Limit'] > 0) {
-                                      int limit = matchedApp['Limit'];
-                                      splitFile(
-                                          selectedFilePath!,
-                                          limit,
-                                          context,
-                                          selectedFileName!, (splitting) {
-                                        setState(() {
-                                          isSplitting = splitting;
-                                        });
-                                      }, (message) {
-                                        setState(() {
-                                          currentMessage = message;
-                                        });
-                                      },
-                                          encryptBefore: encrypt,
-                                          zipBefore: zipBefore);
-                                      logger.i(
-                                          "File splitting started: $selectedFileName with limit of $limit MB");
-                                    } else {
-                                      logger
-                                          .e("No match with predefined apps.");
-                                    }
-                                  },
-                                  child: const Text('Split'),
-                                )
-                              ],
+                                if (matchedApp['Limit'] > 0) {
+                                  int limit = matchedApp['Limit'];
+                                  splitFile(
+                                    selectedFilePath!,
+                                    limit,
+                                    context,
+                                    selectedFileName!,
+                                    password: password,
+                                    (splitting) {
+                                      setState(() {
+                                        isSplitting = splitting;
+                                      });
+                                    },
+                                    (message) {
+                                      setState(() {
+                                        currentMessage = message;
+                                      });
+                                    },
+                                    encryptBefore: encrypt,
+                                    zipBefore: zipBefore,
+                                  );
+                                } else {
+                                  logger.e("No match with predefined apps.");
+                                }
+                              },
+                              child: const Text('Split'),
                             ),
                           ],
                         ),
@@ -241,20 +269,7 @@ class _PresetScreenState extends State<PresetScreen> {
                     ],
                   ),
                 )
-            } else
-              Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ListTile(
-                      leading: Icon(selectedFileIcon, color: catppuccinPrimary),
-                      title: Text(
-                        selectedFileName!,
-                        style: const TextStyle(color: catppuccinText),
-                      ),
-                    ),
-                  ])
+            }
           ],
         ],
       ),
@@ -263,13 +278,10 @@ class _PresetScreenState extends State<PresetScreen> {
           color: Colors.white54,
           child: Center(
             child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(
-                  height: 12,
-                ),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 12),
                 Text(
                   currentMessage,
                   style: const TextStyle(color: catppuccinText),

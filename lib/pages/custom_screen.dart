@@ -22,6 +22,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
   bool zipBefore = false;
   final TextEditingController _sizeController = TextEditingController();
   String currentMessage = '';
+  String? password;
 
   @override
   void initState() {
@@ -36,6 +37,68 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
   void dispose() {
     _sizeController.dispose();
     super.dispose();
+  }
+
+  void showPasswordDialog() {
+    String enteredPassword = '';
+    String confirmPassword = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+                onChanged: (value) {
+                  enteredPassword = value;
+                },
+              ),
+              TextField(
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Confirm Password'),
+                onChanged: (value) {
+                  confirmPassword = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                setState(() {
+                  password = confirmPassword;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                if (enteredPassword == confirmPassword) {
+                  setState(() {
+                    password = enteredPassword;
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Passwords do not match!'),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -99,16 +162,21 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Checkbox(
+                  Switch(
                     value: zipBefore,
-                    onChanged: (bool? value) {
+                    onChanged: (bool value) {
                       setState(() {
-                        zipBefore = value!;
+                        zipBefore = value;
                       });
                     },
                   ),
                   const Text('Zip before',
                       style: TextStyle(color: catppuccinText)),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: showPasswordDialog,
+                    child: const Text('Set Password'),
+                  ),
                 ],
               ),
               SizedBox(
@@ -134,7 +202,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                           setState(() {
                             currentMessage = message;
                           });
-                        }), zipBefore: zipBefore);
+                        }), zipBefore: zipBefore, password: password);
                       }
                     : null,
                 // Disable ako fajl nije odabran ili chunk size nije unet

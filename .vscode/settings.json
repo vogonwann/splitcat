@@ -8,5 +8,6 @@
         ".flatpak/**": true,
         "_build/**": true
     },
-    "cmake.sourceDirectory": "/home/wann/Development/splitcat/linux"
+    "cmake.sourceDirectory": "/home/wann/Development/splitcat/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

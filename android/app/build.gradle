@@ -30,11 +30,22 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            storeFile file(rootProject.file('key.properties').storeFile)
+            storePassword rootProject.file('key.properties').storePassword
+            keyAlias rootProject.file('key.properties').keyAlias
+            keyPassword rootProject.file('key.properties').keyPassword
+        }
+    }
+
+    buildTypes {
+         release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            // Опционо: Активирај обфускацију
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     dependenciesInfo {

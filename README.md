@@ -12,7 +12,8 @@ Works on:
 - 📱 Linux Phones
 - 🤖 Android
 
-[<img src="https://github.com/user-attachments/assets/6769ff43-7211-4969-9004-fde9184d0ee8">](https://flathub.org/apps/lol.janjic.Splitcat)
+[<img src="https://github.com/user-attachments/assets/6769ff43-7211-4969-9004-fde9184d0ee8">](https://flathub.org/apps/lol.janjic.Splitcat)<br />
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" width="240">](https://apt.izzysoft.de/fdroid/index/apk/lol.janjic.splitcat)
 ## Splitcat in action:
 
 ### Preset size screen

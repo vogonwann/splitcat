@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:splitcat/pages/custom_screen.dart';
 import 'package:splitcat/pages/merge_screen.dart';
+import 'package:splitcat/pages/multiple_screen.dart';
 import 'package:splitcat/pages/preset_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -163,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const PresetScreen(),
     const CustomSplitScreen(),
     const MergeScreen(),
+    const MultipleScreen(),
   ];
 
   void _onTabTapped(int index) {
@@ -202,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.merge_type),
             label: 'Merge',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.group_add), label: 'Multiple')
         ],
       ),
     );

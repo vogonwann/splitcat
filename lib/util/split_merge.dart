@@ -98,6 +98,56 @@ Future<void> splitFile(
   }
 }
 
+
+/// Splits a file or zipped directory into smaller chunks, with optional encryption.
+Future<void> splitFiles(
+    FilePickerResult files,
+    int chunkSize,
+    BuildContext context,
+    Function(bool) setIsSplitting,
+    Function(String) setCurrentMessage, {
+      bool zipBefore = true,
+      bool encryptBefore = false,
+      String? password,
+    }) async {
+  if (chunkSize <= 0) {
+    logger.e("Chunk size must be > 0.");
+    return;
+  }
+
+  setIsSplitting(true); // Start splitting process
+  final chunkSizeInBytes = chunkSize * 1024 * 1024;
+
+  final zipFile = io.File("splitcat_${DateTime.now()}.zip");
+  await zipFile.create();
+
+  final selectedFileName = path.basename(zipFile.path);
+  if (zipBefore) {
+
+    logger.i("Creating archive $selectedFileName");
+    setCurrentMessage("Creating archive $selectedFileName.zip");
+    try {
+      try {
+        final List<io.File> filesToArchive = List.empty(growable: true);
+        for (var file in files.files) {
+          filesToArchive.add(io.File(file.path!));
+        }
+        farchive.ZipFile.createFromFiles(sourceDir: io.File(files.files[0].path!).parent, files: filesToArchive, zipFile: zipFile);
+      } catch (e) {
+        logger.e("$e");
+      }
+
+      await _processAndSplitFile(zipFile, chunkSizeInBytes, context,
+          selectedFileName, setIsSplitting, setCurrentMessage, isZip: true);
+
+      logger.i("Archive $selectedFileName created");
+      setCurrentMessage("Archive ${zipFile.path} created");
+    } catch (e) {
+      logger.e("$e");
+    }
+  }
+}
+
 // Processes the given file and splits it into chunks.
 Future<void> _processAndSplitFile(
     io.File file,

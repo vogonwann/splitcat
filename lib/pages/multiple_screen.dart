@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:file_selector/file_selector.dart' as file_selector;
 import 'package:splitcat/util/catppuccin.dart';
 
 import '../util/split_merge.dart';
@@ -112,6 +109,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(height: 24,),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
@@ -156,7 +154,6 @@ class _MultipleScreenState extends State<MultipleScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: showPasswordDialog,
                     child: const Text('Set Password'),
@@ -177,7 +174,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
                         _sizeController.text.isNotEmpty
                     ? () {
                         int chunkSize = int.tryParse(_sizeController.text) ?? 0;
-                        splitFiles(selectedFiles, chunkSize, context,
+                        splitFiles2(selectedFiles, chunkSize, context,
                             ((splitting) {
                           setState(() {
                             isSplitting = splitting;
@@ -192,6 +189,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
                 // Disable ako fajl nije odabran ili chunk size nije unet
                 child: const Text('Split Files'),
               ),
+              SizedBox(height: 24,)
             ],
           ),
         ),

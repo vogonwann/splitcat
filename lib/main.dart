@@ -30,9 +30,9 @@ void main() async {
   }
 }
 
-void _showAboutDialog(BuildContext context) {
+Future<void> _showAboutDialog(BuildContext context) async {
   String version = '';
-  PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+  await PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     version = packageInfo.version;
   });
   showDialog(
@@ -163,8 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const PresetScreen(),
     const CustomSplitScreen(),
-    const MergeScreen(),
     const MultipleScreen(),
+    const MergeScreen(),
   ];
 
   void _onTabTapped(int index) {
@@ -182,14 +182,15 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: () =>
-                _showAboutDialog(context), // Dugme za About dijalog
+            onPressed: () async =>
+                await _showAboutDialog(context),
           ),
         ],
       ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        showUnselectedLabels: true,
         onTap: _onTabTapped,
         items: const [
           BottomNavigationBarItem(
@@ -201,10 +202,13 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Custom',
           ),
           BottomNavigationBarItem(
+              icon: Icon(Icons.file_copy_sharp),
+              label: 'Multiple'
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.merge_type),
             label: 'Merge',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.group_add), label: 'Multiple')
         ],
       ),
     );

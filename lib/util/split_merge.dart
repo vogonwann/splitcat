@@ -118,7 +118,7 @@ Future<void> splitFiles(
   setIsSplitting(true); // Start splitting process
   final chunkSizeInBytes = chunkSize * 1024 * 1024;
 
-  final zipFile = io.File("splitcat_${DateTime.now()}.zip");
+  final zipFile = io.File("${path.dirname(files.files[0].path!)}/splitcat_${DateTime.now()}.zip");
   await zipFile.create();
 
   final selectedFileName = path.basename(zipFile.path);
@@ -132,7 +132,61 @@ Future<void> splitFiles(
         for (var file in files.files) {
           filesToArchive.add(io.File(file.path!));
         }
-        farchive.ZipFile.createFromFiles(sourceDir: io.File(files.files[0].path!).parent, files: filesToArchive, zipFile: zipFile);
+        await farchive.ZipFile.createFromFiles(sourceDir: io.File(files.files[0].path!).parent, files: filesToArchive, zipFile: zipFile);
+      } catch (e) {
+        logger.e("$e");
+      }
+
+      await _processAndSplitFile(zipFile, chunkSizeInBytes, context,
+          selectedFileName, setIsSplitting, setCurrentMessage, isZip: true);
+
+      logger.i("Archive $selectedFileName created");
+      setCurrentMessage("Archive ${zipFile.path} created");
+    } catch (e) {
+      logger.e("$e");
+    }
+  }
+}
+
+
+Future<void> splitFiles2(
+    FilePickerResult files,
+    int chunkSize,
+    BuildContext context,
+    Function(bool) setIsSplitting,
+    Function(String) setCurrentMessage, {
+      bool zipBefore = true,
+      bool encryptBefore = false,
+      String? password,
+    }) async {
+  if (chunkSize <= 0) {
+    logger.e("Chunk size must be > 0.");
+    return;
+  }
+
+  setIsSplitting(true); // Start splitting process
+  final chunkSizeInBytes = chunkSize * 1024 * 1024;
+
+  var zipFile = io.File("${path.dirname(files.files[0].path!)}/splitcat_${DateTime.now()}.zip");
+  await zipFile.create();
+
+  final selectedFileName = path.basename(zipFile.path);
+  if (zipBefore) {
+
+    logger.i("Creating archive $selectedFileName");
+    setCurrentMessage("Creating archive $selectedFileName.zip");
+    try {
+      try {
+        var archive = Archive();
+        for (var file in files.files) {
+          var bytes = await io.File(file.path!).readAsBytes();
+          var archiveFile = ArchiveFile(path.basename(file.path!), bytes.length, bytes);
+          archive.addFile(archiveFile);
+        }
+
+        final zipEncoder = ZipEncoder(password: password);
+        final encodedArchive = zipEncoder.encode(archive);
+        zipFile = await zipFile.writeAsBytes(encodedArchive!);
       } catch (e) {
         logger.e("$e");
       }
@@ -157,7 +211,8 @@ Future<void> _processAndSplitFile(
     Function(bool) setIsSplitting,
     Function(String) setCurrentMessage,
     { bool isZip = false }) async {
-  final bytes = await file.readAsBytes();
+
+  final bytes = await io.File(file.path).readAsBytes();
   final length = bytes.length;
   final nrOfChunks = (length / chunkSizeInBytes).ceil();
   List<io.File> chunkFiles = [];
@@ -212,12 +267,11 @@ Future<void> _deleteFile(io.File file) async {
   }
 }
 
-// Funkcija koja zipuje folder
+
 Future<void> zipFolder(String sourceDirPath, String zipFilePath) async {
   final encoder = ZipEncoder();
   final archive = Archive();
 
-  // Iteriraj kroz fajlove unutar foldera
   Directory sourceDir = Directory(sourceDirPath);
   List<FileSystemEntity> files = sourceDir.listSync(recursive: true);
 
@@ -229,7 +283,6 @@ Future<void> zipFolder(String sourceDirPath, String zipFilePath) async {
     }
   }
 
-  // Kreiraj ZIP fajl
   File zipFile = File(zipFilePath);
   zipFile.writeAsBytesSync(encoder.encode(archive)!);
 }

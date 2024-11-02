@@ -202,6 +202,54 @@ Future<void> splitFiles2(
   }
 }
 
+
+Future<void> shareFiles(
+    FilePickerResult files,
+    BuildContext context,
+    Function(bool) setIsSplitting,
+    Function(String) setQrCode, {
+      bool zipBefore = true,
+      bool encryptBefore = false,
+      String? password,
+    }) async {
+
+
+  var zipFile = io.File("${path.dirname(files.files[0].path!)}/splitcat_${DateTime.now()}.zip");
+  await zipFile.create();
+
+  final selectedFileName = path.basename(zipFile.path);
+  if (zipBefore) {
+
+    logger.i("Creating archive $selectedFileName");
+    setQrCode("Creating archive $selectedFileName.zip");
+    try {
+      try {
+        var archive = Archive();
+        for (var file in files.files) {
+          var bytes = await io.File(file.path!).readAsBytes();
+          var archiveFile = ArchiveFile(path.basename(file.path!), bytes.length, bytes);
+          archive.addFile(archiveFile);
+        }
+
+        final zipEncoder = ZipEncoder(password: password);
+        final encodedArchive = zipEncoder.encode(archive);
+        zipFile = await zipFile.writeAsBytes(encodedArchive!);
+      } catch (e) {
+        logger.e("$e");
+      }
+      logger.i("Archive $selectedFileName created");
+
+      // await _processAndSplitFile(zipFile, chunkSizeInBytes, context,
+      //     selectedFileName, setIsSplitting, setCurrentMessage, isZip: true);
+      startFileServer(zipFile.path);
+      var ipAddress = await getLocalIpAddress();
+      setQrCode("http://$ipAddress:8080");
+    } catch (e) {
+      logger.e("$e");
+    }
+  }
+}
+
 // Processes the given file and splits it into chunks.
 Future<void> _processAndSplitFile(
     io.File file,
@@ -388,4 +436,44 @@ void _offerFileSharing(List<io.File> chunkFiles, BuildContext context) {
   }
 
   logger.log(Level.info, "Sharing dialog opened.");
+}
+
+Future<String> getLocalIpAddress() async {
+  // Get all interfaces and find IPv4 address
+  for (var interface in await NetworkInterface.list()) {
+    for (var addr in interface.addresses) {
+      if (addr.type == InternetAddressType.IPv4 && !addr.isLoopback) {
+        return addr.address;
+      }
+    }
+  }
+  return '0.0.0.0';
+}
+
+void startFileServer(String filePath) async {
+  final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
+  logger.i('Server started on: ${server.address.address}:${server.port}');
+
+  await for (HttpRequest request in server) {
+    if (request.method == 'GET') {
+      final file = File(filePath);
+      if (await file.exists()) {
+        request.response.headers.contentType = ContentType.binary;
+
+        // Stream the file to the response
+        await request.response.addStream(file.openRead());
+
+        // Close the response after streaming the file
+        await request.response.close();
+
+        // Close the server after the file has been sent
+        await server.close();
+        logger.i('Server closed.');
+      } else {
+        request.response.statusCode = HttpStatus.notFound;
+        request.response.write("File not found.");
+        await request.response.close();
+      }
+    }
+  }
 }

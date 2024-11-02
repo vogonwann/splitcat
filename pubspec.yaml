@@ -25,6 +25,8 @@ dependencies:
   path: ^1.9.0
   package_info_plus: ^8.1.0
   encrypt: ^5.0.3
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

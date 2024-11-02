@@ -15,21 +15,14 @@ class QrCodeReadScreen extends StatefulWidget {
 }
 
 class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
-  String? selectedFileName;
-  String? selectedFilePath;
-  IconData? selectedFileIcon;
-  bool isSplitting = false;
   bool isDownloading = false; // Indikator preuzimanja
   double downloadProgress = 0.0; // Procenat preuzimanja
-  bool zipBefore = false;
-  final TextEditingController _sizeController = TextEditingController();
-  String currentMessage = '';
-  FilePickerResult selectedFile = FilePickerResult([]);
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? qrViewController;
 
   @override
   void dispose() {
-    _sizeController.dispose();
+    qrViewController?.dispose();
     super.dispose();
   }
 
@@ -65,12 +58,13 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
     });
   }
 
-  Future<void> onQRViewCreated(QRViewController controller) async {
-    controller.scannedDataStream.listen((scanData) {
-      // Ovdje možete obraditi skenirane podatke
-      // npr. preuzimanje fajla
-      var outputFile = await FilePicker.platform.saveFile(dialogTitle: "Choose location to save", fileName: "splitcat_${DateTime.now().microsecondsSinceEpoch}.zip");
-      downloadFile(scanData.code!, outputFile!); // zamenite sa pravim putem
+  void onQRViewCreated(QRViewController controller) {
+    qrViewController = controller;
+    controller.scannedDataStream.listen((scanData) async {
+      // Kada se QR kod skenira, preuzmi fajl
+      String savePath = "/path/to/save/file.zip"; // Zamenite sa pravim putem
+
+      downloadFile(scanData.code!, savePath); // Zamenite sa pravim putem
     });
   }
 
@@ -92,95 +86,22 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
                 Text('${(downloadProgress * 100).toStringAsFixed(0)}% preuzeto'),
               ],
             )
-                : SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 24),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    ),
-                    onPressed: () async {
-                      var result = await FilePicker.platform.pickFiles(allowMultiple: false);
-                      if (result != null) {
-                        setState(() {
-                          selectedFile = result;
-                          selectedFileIcon = Icons.insert_drive_file;
-                        });
-                      }
-                    },
-                    child: Text("Select file"),
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 250,
+                  height: 250,
+                  child: QRView(
+                    key: qrKey,
+                    onQRViewCreated: onQRViewCreated,
                   ),
-                  if (selectedFile.files.isNotEmpty)
-                    ListTile(
-                      leading: Icon(selectedFileIcon),
-                      title: Text(selectedFile.files.first.name),
-                    ),
-                  SizedBox(height: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    ),
-                    onPressed: () {
-                      shareFiles(selectedFile, context, (splitting) {
-                        setState(() {
-                          isSplitting = splitting;
-                        });
-                      }, (message) {
-                        setState(() {
-                          currentMessage = message;
-                        });
-                      }, zipBefore: true);
-                    },
-                    child: const Text('Send File'),
-                  ),
-                  SizedBox(height: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    ),
-                    onPressed: () {
-                      shareFiles(selectedFile, context, (splitting) {
-                        setState(() {
-                          isSplitting = splitting;
-                        });
-                      }, (message) {
-                        setState(() {
-                          currentMessage = message;
-                        });
-                      }, zipBefore: true);
-                    },
-                    child: const Text('Receive File'),
-                  ),
-                  SizedBox(height: 24),
-                ],
-              ),
+                ),
+                SizedBox(height: 24),
+                Text('Skenirajte QR kod za preuzimanje fajla'),
+              ],
             ),
           ),
-          if (isSplitting)
-            Container(
-              color: Colors.white54,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 12),
-                    Text(
-                      currentMessage,
-                      style: const TextStyle(color: catppuccinText),
-                    ),
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
     );

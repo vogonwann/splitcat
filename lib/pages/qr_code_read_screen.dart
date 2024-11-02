@@ -1,22 +1,18 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:splitcat/util/catppuccin.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-import '../util/split_merge.dart';
-
-class QrCodeReadScreen extends StatefulWidget {
-  const QrCodeReadScreen({super.key});
+class QrCodeScreen extends StatefulWidget {
+  const QrCodeScreen({super.key});
 
   @override
-  _QrCodeScreenReadState createState() => _QrCodeScreenReadState();
+  _QrCodeScreenState createState() => _QrCodeScreenState();
 }
 
-class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
+class _QrCodeScreenState extends State<QrCodeScreen> {
   bool isDownloading = false; // Indikator preuzimanja
-  double downloadProgress = 0.0; // Procenat preuzimanja
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? qrViewController;
 
@@ -29,7 +25,6 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
   Future<void> downloadFile(String url, String savePath) async {
     setState(() {
       isDownloading = true;
-      downloadProgress = 0.0;
     });
 
     final request = http.Request('GET', Uri.parse(url));
@@ -37,18 +32,9 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
 
     if (response.statusCode == 200) {
       final file = File(savePath);
-      final totalBytes = response.contentLength;
-      int receivedBytes = 0;
 
-      await response.stream.listen((value) {
-        receivedBytes += value.length;
-        setState(() {
-          downloadProgress = totalBytes != null ? receivedBytes / totalBytes : 0;
-        });
-      }).asFuture();
-
-      await file.writeAsBytes(await response.stream.toBytes());
-      print("File downloaded and save in $savePath");
+      await response.stream.pipe(file.openWrite());
+      print("File downloaded and saved at $savePath");
 
     } else {
       print("Error while downloading: ${response.statusCode}");
@@ -62,13 +48,10 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
   void onQRViewCreated(QRViewController controller) {
     qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      // Kada se QR kod skenira, preuzmi fajl
-      String? savePath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Choose location to save',
-          fileName: 'splitcat_qr_${DateTime.now().microsecondsSinceEpoch}.zip',
-          allowedExtensions: ['zip']);
+      // Kada se QR kod skenira, započinje preuzimanje fajla
+      String? savePath = await FilePicker.platform.saveFile(dialogTitle: "Choose location to save", fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}"); // Zamenite sa pravim putem
 
-      downloadFile(scanData.code!, savePath!); // Zamenite sa pravim putem
+      await downloadFile(scanData.code!, savePath!); // Zamenite sa pravim putem
     });
   }
 
@@ -85,9 +68,9 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
                 ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(value: downloadProgress),
+                CircularProgressIndicator(), // Indefinite spinner
                 SizedBox(height: 12),
-                Text('${(downloadProgress * 100).toStringAsFixed(0)}% preuzeto'),
+                Text('Transfer in progress...'),
               ],
             )
                 : Column(
@@ -102,7 +85,7 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
                   ),
                 ),
                 SizedBox(height: 24),
-                Text('Skenirajte QR kod za preuzimanje fajla'),
+                Text('Scan the QR code to download a file'),
               ],
             ),
           ),

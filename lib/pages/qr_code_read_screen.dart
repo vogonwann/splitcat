@@ -4,14 +4,14 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class QrCodeScreen extends StatefulWidget {
-  const QrCodeScreen({super.key});
+class QrCodeReadScreen extends StatefulWidget {
+  const QrCodeReadScreen({super.key});
 
   @override
-  _QrCodeScreenState createState() => _QrCodeScreenState();
+  _QrCodeReadScreenState createState() => _QrCodeReadScreenState();
 }
 
-class _QrCodeScreenState extends State<QrCodeScreen> {
+class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
   bool isDownloading = false; // Indikator preuzimanja
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? qrViewController;

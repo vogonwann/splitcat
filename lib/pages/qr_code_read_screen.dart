@@ -48,9 +48,10 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
       }).asFuture();
 
       await file.writeAsBytes(await response.stream.toBytes());
-      print("Fajl preuzet i sačuvan na $savePath");
+      print("File downloaded and save in $savePath");
+
     } else {
-      print("Greška prilikom preuzimanja fajla: ${response.statusCode}");
+      print("Error while downloading: ${response.statusCode}");
     }
 
     setState(() {
@@ -62,9 +63,12 @@ class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
     qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
       // Kada se QR kod skenira, preuzmi fajl
-      String savePath = "/path/to/save/file.zip"; // Zamenite sa pravim putem
+      String? savePath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Choose location to save',
+          fileName: 'splitcat_qr_${DateTime.now().microsecondsSinceEpoch}.zip',
+          allowedExtensions: ['zip']);
 
-      downloadFile(scanData.code!, savePath); // Zamenite sa pravim putem
+      downloadFile(scanData.code!, savePath!); // Zamenite sa pravim putem
     });
   }
 

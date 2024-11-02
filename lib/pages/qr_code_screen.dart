@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:splitcat/pages/qr_code_read_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -91,7 +92,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                         title: Text(selectedFile.files.first.name),
                       ),
                     SizedBox(height: 12),
-                    if (Platform.isAndroid || Platform.isIOS)
+                    //if (Platform.isAndroid || Platform.isIOS)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
@@ -103,7 +104,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => QrCodeScreen()),
+                                builder: (context) => QrCodeReadScreen()),
                           );
                         },
                         child: const Text('Receive File'),

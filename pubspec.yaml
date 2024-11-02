@@ -1,7 +1,7 @@
 name: splitcat
 description: "Split and merge files easy way."
 publish_to: 'none'
-version: 0.1.15+17
+version: 0.1.16
 
 environment:
   flutter: ">=3.24.0"

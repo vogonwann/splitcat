@@ -7,14 +7,14 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../util/split_merge.dart';
 
-class QrCodeScreen extends StatefulWidget {
-  const QrCodeScreen({super.key});
+class QrCodeReadScreen extends StatefulWidget {
+  const QrCodeReadScreen({super.key});
 
   @override
-  _QrCodeScreenState createState() => _QrCodeScreenState();
+  _QrCodeScreenReadState createState() => _QrCodeScreenReadState();
 }
 
-class _QrCodeScreenState extends State<QrCodeScreen> {
+class _QrCodeScreenReadState extends State<QrCodeReadScreen> {
   String? selectedFileName;
   String? selectedFilePath;
   IconData? selectedFileIcon;

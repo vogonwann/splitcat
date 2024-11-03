@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:splitcat/util/logger.dart';
 
 class QrCodeReadScreen extends StatefulWidget {
   const QrCodeReadScreen({super.key});
@@ -27,6 +28,8 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
       isDownloading = true;
     });
 
+    logger.d("Download file: savePath: $savePath");
+
     final request = http.Request('GET', Uri.parse(url));
     final response = await request.send();
 
@@ -34,10 +37,11 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
       final file = File(savePath);
 
       await response.stream.pipe(file.openWrite());
-      print("File downloaded and saved at $savePath");
+      logger.i("File downloaded and saved at $savePath");
+
 
     } else {
-      print("Error while downloading: ${response.statusCode}");
+      logger.e("Error while downloading: ${response.statusCode}");
     }
 
     setState(() {
@@ -48,10 +52,10 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
   void onQRViewCreated(QRViewController controller) {
     qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      // Kada se QR kod skenira, započinje preuzimanje fajla
+      // Choose file save location when QR code is scanned
       String? savePath = await FilePicker.platform.saveFile(dialogTitle: "Choose location to save", fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}"); // Zamenite sa pravim putem
 
-      await downloadFile(scanData.code!, savePath!); // Zamenite sa pravim putem
+      await downloadFile(scanData.code!, savePath!);
     });
   }
 

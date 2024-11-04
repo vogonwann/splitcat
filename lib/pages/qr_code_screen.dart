@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:splitcat/pages/qr_code_read_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:http/http.dart' as http;
 
+import '../util/logger.dart';
 import '../util/split_merge.dart';
 
 class QrCodeScreen extends StatefulWidget {
@@ -25,14 +27,75 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   String currentMessage = '';
   FilePickerResult selectedFile = FilePickerResult([]);
   String qrCodeData = 'https://splitcat.janjic.lol';
+  String? password;
 
   @override
   void dispose() {
     _sizeController.dispose();
     super.dispose();
   }
+  void showPasswordDialog() {
+    String enteredPassword = '';
+    String confirmPassword = '';
 
-  @override
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+                onChanged: (value) {
+                  enteredPassword = value;
+                },
+              ),
+              TextField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                onChanged: (value) {
+                  confirmPassword = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                setState(() {
+                  password = confirmPassword;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                if (enteredPassword == confirmPassword) {
+                  setState(() {
+                    password = enteredPassword;
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Passwords do not match!'),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -55,7 +118,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                       ),
                       onPressed: () async {
                         var result = await FilePicker.platform
-                            .pickFiles(allowMultiple: true);
+                            .pickFiles(allowMultiple: false);
                         if (result != null) {
                           setState(() {
                             selectedFile = result;
@@ -69,10 +132,33 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                             setState(() {
                               qrCodeData = qrCode;
                             });
-                          }, zipBefore: true);
+                          }, zipBefore: zipBefore);
                         }
                       },
                       child: const Text('Send File'),
+                    ),
+                    SizedBox(height: 24,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Switch(
+                          value: true,
+                          onChanged: null,
+                         // onChanged: (bool value) {
+                         //   setState(() {
+                         //     zipBefore = value;
+                         //   });
+                         // },
+                        ),
+                        const Text('Zip before',
+                            style: TextStyle(color: catppuccinText)),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: showPasswordDialog,
+                          child: const Text('Set Password'),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: 24,
@@ -92,7 +178,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                         title: Text(selectedFile.files.first.name),
                       ),
                     SizedBox(height: 12),
-                    //if (Platform.isAndroid || Platform.isIOS)
+                    if (Platform.isAndroid || Platform.isIOS)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,

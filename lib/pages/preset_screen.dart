@@ -219,7 +219,7 @@ class _PresetScreenState extends State<PresetScreen> {
                                     style: TextStyle(color: catppuccinText)),
                                 const SizedBox(width: 16),
                                 ElevatedButton(
-                                  onPressed: showPasswordDialog,
+                                  onPressed: zipBefore ? showPasswordDialog : null,
                                   child: const Text('Set Password'),
                                 ),
                               ],

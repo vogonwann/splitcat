@@ -1,0 +1,1 @@
+This app uses camera to scan QR code from other devices using the same app. No data is collected and sent to any external servers.

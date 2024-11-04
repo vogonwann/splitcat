@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:splitcat/util/logger.dart';
@@ -23,23 +24,33 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
     super.dispose();
   }
 
-  Future<void> downloadFile(String url, String savePath) async {
+  Future<void> downloadFile(String url) async {
     setState(() {
       isDownloading = true;
     });
 
-    logger.d("Download file: savePath: $savePath");
+    print(url);
 
     final request = http.Request('GET', Uri.parse(url));
     final response = await request.send();
 
     if (response.statusCode == 200) {
-      final file = File(savePath);
+      // Чување стрима у бајтове
+      final bytes = await response.stream.toBytes();
 
-      await response.stream.pipe(file.openWrite());
-      logger.i("File downloaded and saved at $savePath");
+      // Сачувајте бајтове преко FilePicker-а
+      final result = await FilePicker.platform.saveFile(
+        dialogTitle: "Choose location to save",
+        fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}.zip",
+        initialDirectory: '/storage/emulated/0/Download',
+        bytes: bytes,  // Прослеђујемо бајтове овде
+      );
 
-
+      if (result != null) {
+        logger.i("File downloaded and saved at $result");
+      } else {
+        logger.e("Save path selection was canceled.");
+      }
     } else {
       logger.e("Error while downloading: ${response.statusCode}");
     }
@@ -49,14 +60,39 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
     });
   }
 
-  void onQRViewCreated(QRViewController controller) {
+
+  Future<void> onQRViewCreated(QRViewController controller) async {
     qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      // Choose file save location when QR code is scanned
-      String? savePath = await FilePicker.platform.saveFile(dialogTitle: "Choose location to save", fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}"); // Zamenite sa pravim putem
+      //String? savePath = await FilePicker.platform.saveFile(
+      //  dialogTitle: "Choose location to save",
+      //  initialDirectory: (await getDownloadsDirectory())?.path,
+      //  fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}",
+      //);
+      //await Future.delayed(Duration(milliseconds: 2000));
 
-      await downloadFile(scanData.code!, savePath!);
+      //if (savePath == null || savePath.isEmpty) {
+      //  logger.e("Save path is null. User canceled file selection.");
+      //  showErrorSnackbar("Save path is null.");
+      //  return;
+      //}
+
+      try {
+        await downloadFile(scanData.code!);
+      } catch (e) {
+        logger.e("Error while downloading file: $e");
+        showErrorSnackbar("Error while downloading file: $e");
+      }
     });
+  }
+
+  void showErrorSnackbar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override

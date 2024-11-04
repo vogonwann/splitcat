@@ -213,13 +213,11 @@ Future<void> shareFiles(
       String? password,
     }) async {
 
-
-  var zipFile = io.File("${path.dirname(files.files[0].path!)}/splitcat_${DateTime.now()}.zip");
-  await zipFile.create();
-
-  final selectedFileName = path.basename(zipFile.path);
+  String filePath = '';
   if (zipBefore) {
-
+    var zipFile = io.File("${path.dirname(files.files[0].path!)}/splitcat_${DateTime.now()}.zip");
+    await zipFile.create();
+    final selectedFileName = path.basename(zipFile.path);
     logger.i("Creating archive $selectedFileName");
     setQrCode("Creating archive $selectedFileName.zip");
     try {
@@ -241,13 +239,16 @@ Future<void> shareFiles(
 
       // await _processAndSplitFile(zipFile, chunkSizeInBytes, context,
       //     selectedFileName, setIsSplitting, setCurrentMessage, isZip: true);
-      startFileServer(zipFile.path);
-      var ipAddress = await getLocalIpAddress();
-      setQrCode("http://$ipAddress:8080");
+      filePath = zipFile.path;
     } catch (e) {
       logger.e("$e");
     }
+  } else {
+    filePath = path.dirname(files.files[0].path!);
   }
+  startFileServer(filePath);
+  var ipAddress = await getLocalIpAddress();
+  setQrCode("http://$ipAddress:8080");
 }
 
 // Processes the given file and splits it into chunks.

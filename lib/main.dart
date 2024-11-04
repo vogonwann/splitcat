@@ -4,6 +4,7 @@ import 'package:splitcat/pages/custom_screen.dart';
 import 'package:splitcat/pages/merge_screen.dart';
 import 'package:splitcat/pages/multiple_screen.dart';
 import 'package:splitcat/pages/preset_screen.dart';
+import 'package:splitcat/pages/qr_code_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
@@ -165,12 +166,35 @@ class _HomeScreenState extends State<HomeScreen> {
     const CustomSplitScreen(),
     const MultipleScreen(),
     const MergeScreen(),
+    const QrCodeScreen()
   ];
 
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  void _openNewScreenWithAnimation(BuildContext context) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => QrCodeScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -180,6 +204,10 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Splitcat'),
         backgroundColor: catppuccinSurface,
         actions: [
+          IconButton(onPressed: () async {
+            _openNewScreenWithAnimation(context);
+          }, icon: const Icon(Icons.qr_code),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () async =>

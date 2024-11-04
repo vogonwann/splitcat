@@ -1,7 +1,7 @@
 name: splitcat
 description: "Split and merge files easy way."
 publish_to: 'none'
-version: 0.1.15+17
+version: 0.1.16+17
 
 environment:
   flutter: ">=3.24.0"
@@ -25,6 +25,8 @@ dependencies:
   path: ^1.9.0
   package_info_plus: ^8.1.0
   encrypt: ^5.0.3
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

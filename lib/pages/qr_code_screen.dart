@@ -6,6 +6,7 @@ import 'package:splitcat/pages/qr_code_read_screen.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../util/logger.dart';
 import '../util/split_merge.dart';
@@ -37,25 +38,26 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   void showPasswordDialog() {
     String enteredPassword = '';
     String confirmPassword = '';
+    final localizations = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Password'),
+          title: Text(localizations!.global_enterPassword),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: localizations.global_enterPassword),
                 onChanged: (value) {
                   enteredPassword = value;
                 },
               ),
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                decoration: InputDecoration(labelText: localizations.global_confirmPassword),
                 onChanged: (value) {
                   confirmPassword = value;
                 },
@@ -64,7 +66,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(localizations.global_cancel),
               onPressed: () {
                 setState(() {
                   password = confirmPassword;
@@ -73,7 +75,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
               },
             ),
             TextButton(
-              child: const Text('OK'),
+              child: Text(localizations.global_ok),
               onPressed: () {
                 if (enteredPassword == confirmPassword) {
                   setState(() {
@@ -82,8 +84,8 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Passwords do not match!'),
+                    SnackBar(
+                      content: Text(localizations.global_passwordsDoNotMatch),
                     ),
                   );
                 }
@@ -97,9 +99,10 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
 
     @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text('Share via QR Code'),
+          title: Text(localizations!.qr_shareViaQrCode),
         ),
         body: Stack(
           children: [
@@ -135,7 +138,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                           }, zipBefore: zipBefore);
                         }
                       },
-                      child: const Text('Send File'),
+                      child: Text(localizations.global_sendFile),
                     ),
                     SizedBox(height: 24,),
                     Row(
@@ -151,12 +154,12 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                          //   });
                          // },
                         ),
-                        const Text('Zip before',
+                        Text(localizations.global_zipBefore,
                             style: TextStyle(color: catppuccinText)),
                         const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: showPasswordDialog,
-                          child: const Text('Set Password'),
+                          child: Text(localizations.global_setPassword),
                         ),
                       ],
                     ),
@@ -193,7 +196,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                                 builder: (context) => QrCodeReadScreen()),
                           );
                         },
-                        child: const Text('Receive File'),
+                        child: Text(localizations.qr_receiveFile),
                       ),
                     SizedBox(height: 24),
                   ],

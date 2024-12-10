@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:splitcat/pages/custom_screen.dart';
 import 'package:splitcat/pages/merge_screen.dart';
 import 'package:splitcat/pages/multiple_screen.dart';
@@ -9,6 +10,8 @@ import 'package:splitcat/util/catppuccin.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<String?> getCPUArchitecture() async {
   if (Platform.isWindows) {
@@ -33,6 +36,7 @@ void main() async {
 
 Future<void> _showAboutDialog(BuildContext context) async {
   String version = '';
+  final localization = AppLocalizations.of(context);
   await PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
     version = packageInfo.version;
   });
@@ -40,13 +44,13 @@ Future<void> _showAboutDialog(BuildContext context) async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('About Splitcat'),
+        title: Text(localization!.about_title),
         content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Version: $version",
+                "${localization.about_version} $version",
                 style: TextStyle(fontSize: 12.0, color: Colors.grey.shade400),
               ),
               SizedBox(height: 12,),
@@ -55,22 +59,22 @@ Future<void> _showAboutDialog(BuildContext context) async {
                   children: <Widget>[
                     _buildLinkRow(
                       icon: Icons.person,
-                      text: 'Developed by Ivan Janjić',
+                      text: localization.about_developedBy,
                       url: '',
                     ),
                     _buildLinkRow(
                       icon: Icons.link,
-                      text: 'GitHub: vogonwann',
+                      text: localization.about_github,
                       url: 'https://github.com/vogonwann',
                     ),
                     _buildLinkRow(
                       icon: Icons.language,
-                      text: 'Site: janjic.lol',
+                      text: localization.about_site,
                       url: 'https://janjic.lol',
                     ),
                     _buildLinkRow(
                       icon: Icons.portrait,
-                      text: 'Mastodon: wannoye',
+                      text: localization.about_mastodon,
                       url: 'https://mastodon.social/@wannoye',
                     ),
                   ],
@@ -112,7 +116,6 @@ Widget _buildLinkRow(
   );
 }
 
-// Funkcija za otvaranje URL-a
 void _launchURL(String url) async {
   final Uri uri = Uri.parse(url);
   if (await canLaunchUrl(uri)) {
@@ -129,6 +132,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Splitcat',
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('sr', ''), // Serbian (Српски)
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
       theme: ThemeData(
         scaffoldBackgroundColor: catppuccinBackground,
         colorScheme: const ColorScheme.dark(
@@ -199,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Splitcat'),
@@ -220,22 +234,22 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _currentIndex,
         showUnselectedLabels: true,
         onTap: _onTabTapped,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'Preset',
+            label: localizations!.bottomNavigationBar_preset,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.edit),
-            label: 'Custom',
+            label: localizations.bottomNavigationBar_custom,
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.file_copy_sharp),
-              label: 'Multiple'
+              label: localizations.bottomNavigationBar_multiple
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.merge_type),
-            label: 'Merge',
+            label: localizations.bottomNavigationBar_merge,
           ),
         ],
       ),

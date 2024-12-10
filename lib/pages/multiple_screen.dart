@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:splitcat/util/catppuccin.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../util/split_merge.dart';
 
@@ -42,18 +43,19 @@ class _MultipleScreenState extends State<MultipleScreen> {
   void showPasswordDialog() {
     String enteredPassword = '';
     String confirmPassword = '';
+    final localizations = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Password'),
+          title: Text(localizations!.global_enterPassword),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: localizations.global_password),
                 onChanged: (value) {
                   enteredPassword = value;
                 },
@@ -61,7 +63,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
               TextField(
                 obscureText: true,
                 decoration:
-                    const InputDecoration(labelText: 'Confirm Password'),
+                    InputDecoration(labelText: localizations.global_confirmPassword),
                 onChanged: (value) {
                   confirmPassword = value;
                 },
@@ -70,7 +72,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(localizations.global_cancel),
               onPressed: () {
                 setState(() {
                   password = confirmPassword;
@@ -79,7 +81,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
               },
             ),
             TextButton(
-              child: const Text('OK'),
+              child: Text(localizations.global_ok),
               onPressed: () {
                 if (enteredPassword == confirmPassword) {
                   setState(() {
@@ -88,8 +90,8 @@ class _MultipleScreenState extends State<MultipleScreen> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Passwords do not match!'),
+                    SnackBar(
+                      content: Text(localizations.global_passwordsDoNotMatch),
                     ),
                   );
                 }
@@ -103,6 +105,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Stack(
       children: [
         Center(
@@ -127,7 +130,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
                       });
                     }
                   },
-                  child: Text("Select files")),
+                  child: Text(localizations!.global_browseFiles)),
               if (selectedFiles != null) ...[
                 Expanded(
                     child: ListView.builder(
@@ -143,8 +146,8 @@ class _MultipleScreenState extends State<MultipleScreen> {
                 padding: const EdgeInsets.all(24),
                 child: TextField(
                   controller: _sizeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter chunk size in MB',
+                  decoration: InputDecoration(
+                    labelText: localizations.global_enterChunkSizeInMb,
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
@@ -156,7 +159,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: showPasswordDialog,
-                    child: const Text('Set Password'),
+                    child: Text(localizations.global_setPassword),
                   ),
                 ],
               ),
@@ -187,7 +190,7 @@ class _MultipleScreenState extends State<MultipleScreen> {
                       }
                     : null,
                 // Disable ako fajl nije odabran ili chunk size nije unet
-                child: const Text('Split Files'),
+                child: Text(localizations.global_splitFiles),
               ),
               SizedBox(height: 24,)
             ],

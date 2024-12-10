@@ -5,6 +5,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:splitcat/util/catppuccin.dart';
 import 'package:splitcat/util/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../util/split_merge.dart';
 
@@ -41,24 +42,25 @@ class _PresetScreenState extends State<PresetScreen> {
     String enteredPassword = '';
     String confirmPassword = '';
 
+    final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Password'),
+          title: Text(localizations!.global_enterPassword),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: localizations.global_password),
                 onChanged: (value) {
                   enteredPassword = value;
                 },
               ),
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                decoration: InputDecoration(labelText: localizations.global_confirmPassword),
                 onChanged: (value) {
                   confirmPassword = value;
                 },
@@ -67,7 +69,7 @@ class _PresetScreenState extends State<PresetScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(localizations.global_cancel),
               onPressed: () {
                 setState(() {
                   password = confirmPassword;
@@ -76,7 +78,7 @@ class _PresetScreenState extends State<PresetScreen> {
               },
             ),
             TextButton(
-              child: const Text('OK'),
+              child: Text(localizations.global_ok),
               onPressed: () {
                 if (enteredPassword == confirmPassword) {
                   setState(() {
@@ -85,8 +87,8 @@ class _PresetScreenState extends State<PresetScreen> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Passwords do not match!'),
+                    SnackBar(
+                      content: Text(localizations.global_passwordsDoNotMatch),
                     ),
                   );
                 }
@@ -136,6 +138,7 @@ class _PresetScreenState extends State<PresetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Stack(children: [
       Column(
         children: [
@@ -215,12 +218,12 @@ class _PresetScreenState extends State<PresetScreen> {
                                     });
                                   },
                                 ),
-                                const Text('Zip before',
+                                Text(localizations!.global_zipBefore,
                                     style: TextStyle(color: catppuccinText)),
                                 const SizedBox(width: 16),
                                 ElevatedButton(
                                   onPressed: zipBefore ? showPasswordDialog : null,
-                                  child: const Text('Set Password'),
+                                  child: Text(localizations.global_setPassword),
                                 ),
                               ],
                             ),
@@ -261,7 +264,7 @@ class _PresetScreenState extends State<PresetScreen> {
                                   logger.e("No match with predefined apps.");
                                 }
                               },
-                              child: const Text('Split'),
+                              child: Text(localizations.global_split),
                             ),
                           ],
                         ),

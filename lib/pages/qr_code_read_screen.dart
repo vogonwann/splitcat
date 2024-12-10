@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:splitcat/util/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class QrCodeReadScreen extends StatefulWidget {
   const QrCodeReadScreen({super.key});
@@ -29,7 +30,7 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
       isDownloading = true;
     });
 
-    print(url);
+    final localizations = AppLocalizations.of(context);
 
     final request = http.Request('GET', Uri.parse(url));
     final response = await request.send();
@@ -40,7 +41,7 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
 
       // Сачувајте бајтове преко FilePicker-а
       final result = await FilePicker.platform.saveFile(
-        dialogTitle: "Choose location to save",
+        dialogTitle: localizations!.qr_chooseLocationToSave,
         fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}.zip",
         initialDirectory: '/storage/emulated/0/Download',
         bytes: bytes,  // Прослеђујемо бајтове овде
@@ -64,19 +65,6 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
   Future<void> onQRViewCreated(QRViewController controller) async {
     qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      //String? savePath = await FilePicker.platform.saveFile(
-      //  dialogTitle: "Choose location to save",
-      //  initialDirectory: (await getDownloadsDirectory())?.path,
-      //  fileName: "splitcat_qr_${DateTime.now().microsecondsSinceEpoch}",
-      //);
-      //await Future.delayed(Duration(milliseconds: 2000));
-
-      //if (savePath == null || savePath.isEmpty) {
-      //  logger.e("Save path is null. User canceled file selection.");
-      //  showErrorSnackbar("Save path is null.");
-      //  return;
-      //}
-
       try {
         await downloadFile(scanData.code!);
       } catch (e) {
@@ -97,9 +85,10 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Share via QR Code'),
+        title: Text(localization!.qr_shareViaQrCode),
       ),
       body: Stack(
         children: [
@@ -110,7 +99,7 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
               children: [
                 CircularProgressIndicator(), // Indefinite spinner
                 SizedBox(height: 12),
-                Text('Transfer in progress...'),
+                Text(localization.qr_transferInProgress),
               ],
             )
                 : Column(
@@ -125,7 +114,7 @@ class _QrCodeReadScreenState extends State<QrCodeReadScreen> {
                   ),
                 ),
                 SizedBox(height: 24),
-                Text('Scan the QR code to download a file'),
+                Text(localization.qr_scanTheQRCodeToDownloadFile),
               ],
             ),
           ),

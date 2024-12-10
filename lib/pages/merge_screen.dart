@@ -5,6 +5,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:splitcat/util/catppuccin.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../util/split_merge.dart';
 
@@ -23,15 +24,16 @@ class _MergeScreenState extends State<MergeScreen> {
   String currentMessage = '';
 
   void showCompletionDialog(BuildContext context, String message) {
+    final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Merge finished"),
+          title: Text(localizations!.merge_mergeFinished),
           content: Text(message),
           actions: [
             TextButton(
-              child: const Text("OK"),
+              child: Text(localizations.global_ok),
               onPressed: () {
                 Navigator.of(context).pop(); // Затвори дијалог
               },
@@ -44,6 +46,7 @@ class _MergeScreenState extends State<MergeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
     if (isMerging) {
       return const Center(
           child: SimpleDialog(
@@ -61,7 +64,7 @@ class _MergeScreenState extends State<MergeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Please select files to merge."),
+            Text(localization!.merge_pleaseSelectFilesToMerge),
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -74,7 +77,7 @@ class _MergeScreenState extends State<MergeScreen> {
                 if (Platform.isAndroid || Platform.isIOS) {
                   setState(() {
                     isMerging = true;
-                    currentMessage = "Loading files to merge...";
+                    currentMessage = localization.merge_loadingFilesToMerge;
                   });
                   var result =
                       await FilePicker.platform.pickFiles(allowMultiple: true);
@@ -98,7 +101,7 @@ class _MergeScreenState extends State<MergeScreen> {
                   });
                 }
               },
-              child: const Text('Browse Files'),
+              child: Text(localization.global_browseFiles),
             ),
             if (selectedFileName != null) ...[
               ListTile(
@@ -132,7 +135,7 @@ class _MergeScreenState extends State<MergeScreen> {
                       }
                     }
                   : null, // Disabled ako fajl nije odabran
-              child: const Text('Merge Files'),
+              child: Text(localization.merge_mergeFiles),
             ),
           ],
         ),

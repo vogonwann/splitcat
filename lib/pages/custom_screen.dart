@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart' as file_selector;
 import 'package:splitcat/util/catppuccin.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../util/split_merge.dart';
 
@@ -42,18 +43,19 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
   void showPasswordDialog() {
     String enteredPassword = '';
     String confirmPassword = '';
+    final localizations = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Password'),
+          title: Text(localizations!.global_enterPassword),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: localizations.global_password),
                 onChanged: (value) {
                   enteredPassword = value;
                 },
@@ -61,7 +63,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
               TextField(
                 obscureText: true,
                 decoration:
-                    const InputDecoration(labelText: 'Confirm Password'),
+                    InputDecoration(labelText: localizations.global_confirmPassword),
                 onChanged: (value) {
                   confirmPassword = value;
                 },
@@ -70,7 +72,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(localizations.global_cancel),
               onPressed: () {
                 setState(() {
                   password = confirmPassword;
@@ -88,8 +90,8 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Passwords do not match!'),
+                    SnackBar(
+                      content: Text(localizations.global_passwordsDoNotMatch),
                     ),
                   );
                 }
@@ -103,6 +105,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Stack(
       children: [
         Center(
@@ -139,7 +142,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                     }
                   }
                 },
-                child: const Text('Browse File'),
+                child: Text(localizations!.global_browseFile),
               ),
               if (selectedFileName != null) ...[
                 ListTile(
@@ -151,8 +154,8 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                 padding: const EdgeInsets.all(24),
                 child: TextField(
                   controller: _sizeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter chunk size in MB',
+                  decoration: InputDecoration(
+                    labelText: localizations.global_enterChunkSizeInMb,
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
@@ -170,12 +173,12 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                       });
                     },
                   ),
-                  const Text('Zip before',
+                  Text(localizations.global_zipBefore,
                       style: TextStyle(color: catppuccinText)),
                   const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: showPasswordDialog,
-                    child: const Text('Set Password'),
+                    child: Text(localizations.global_setPassword),
                   ),
                 ],
               ),
@@ -206,7 +209,7 @@ class _CustomSplitScreenState extends State<CustomSplitScreen> {
                       }
                     : null,
                 // Disable ako fajl nije odabran ili chunk size nije unet
-                child: const Text('Split File'),
+                child: Text(localizations.global_splitFile),
               ),
             ],
           ),

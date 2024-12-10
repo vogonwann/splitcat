@@ -224,7 +224,7 @@ jobs:
 
       - name: Build deb package
         working-directory: ./
-        run: flutter_distributor package --platform linux --targets deb --flutter-build-args=verbose
+        run: flutter_distributor package --platform linux --targets deb --flutter-build-args=verbose --skip-clean
 
       - name: List files in dist
         run: ls -la dist

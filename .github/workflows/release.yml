@@ -324,23 +324,23 @@ jobs:
         with:
           recipe: ./AppImageBuilder.yml
 
-      - name: Find AppImage file
-        id: find_appimage
-        run: |
-          APPIMAGE_PATH=$(find . -name "*.AppImage" -print -quit)
-          echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
-          echo "appimage_name=$(basename "$APPIMAGE_PATH")" >> $GITHUB_OUTPUT
-  
-
-      - name: Upload AppImage to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
-          asset_path: ${{ steps.find_appimage.outputs.appimage_path }}  
-          asset_name: ${{ steps.find_appimage.outputs.appimage_name }}
-          asset_content_type: application/octet-stream  # MIME tip za AppImage
+#      - name: Find AppImage file
+#        id: find_appimage
+#        run: |
+#          APPIMAGE_PATH=$(find . -name "*.AppImage" -print -quit)
+#          echo "appimage_path=$APPIMAGE_PATH" >> $GITHUB_OUTPUT
+#          echo "appimage_name=$(basename "$APPIMAGE_PATH")" >> $GITHUB_OUTPUT
+#
+#
+#      - name: Upload AppImage to release
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ needs.create_release.outputs.upload_url }}  # Preuzima upload_url iz create_release joba
+#          asset_path: ${{ steps.find_appimage.outputs.appimage_path }}
+#          asset_name: ${{ steps.find_appimage.outputs.appimage_name }}
+#          asset_content_type: application/octet-stream  # MIME tip za AppImage
 
 #  build-apk:
 #    name: Build APK

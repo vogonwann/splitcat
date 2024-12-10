@@ -146,6 +146,9 @@ jobs:
       - name: Clean build
         run: flutter clean
 
+      - name: Build locales
+        run: flutter gen-l10n
+
       - name: Compile linux
         working-directory: ./
         run: flutter build linux --release --verbose
